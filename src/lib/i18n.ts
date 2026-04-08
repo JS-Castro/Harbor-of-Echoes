@@ -334,17 +334,17 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       timelineEvents: "Eventos da cronologia",
       primaryQuestion: "Pergunta Principal",
       unlockSummary: (count) =>
-        `A estrutura de desbloqueio já está definida em ${count} regras. A app consegue agora renderizar o caso a partir de conteúdo seed em vez de strings fixas no código.`,
+        `A estrutura de desbloqueio já está definida em ${count} regras. A app consegue agora apresentar o caso a partir de conteúdo carregado dos dados, em vez de strings fixas no código.`,
       recentLeads: "Pistas Recentes",
-      evidenceByEscalation: "Provas por escalada",
-      openVault: "Abrir arquivo",
+      evidenceByEscalation: "Provas por fase",
+      openVault: "Abrir arquivo de provas",
       phase: "Fase",
       coreCast: "Elenco Central",
     },
     evidenceList: {
-      tagline: "Arquivo pesquisável do conjunto de provas autorais.",
+      tagline: "Arquivo pesquisável do conjunto de provas escritas para o caso.",
       heading: "Arquivo do caso",
-      summary: (count) => `${count} itens autorais distribuídos por quatro fases da investigação`,
+      summary: (count) => `${count} itens distribuídos por quatro fases da investigação`,
     },
     evidenceDetail: {
       source: "Fonte",
@@ -360,7 +360,7 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       label: "Quadro de Investigação",
       heading: "Superfície de relações",
       description:
-        "Esta primeira versão mapeia o grafo autoral do caso para um quadro navegável. A camada seguinte é notas persistidas, ligações manuais e estado de arrasto por sessão de investigação.",
+        "Esta primeira versão transforma o grafo narrativo do caso num quadro navegável. O passo seguinte é acrescentar notas persistidas, ligações manuais e estado de arrasto por sessão de investigação.",
       sessionState: "Estado da Sessão",
       sessionHelp: "Arrasta os nós para reorganizar o quadro. O layout fica guardado localmente.",
       resetBoard: "Repor Quadro",

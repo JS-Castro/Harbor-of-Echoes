@@ -26,14 +26,11 @@ export function EvidenceVisual({ evidence }: EvidenceVisualProps) {
     <figure className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-slate-950/40">
       <Image
         src="/images/evidence-turbine-interior.jpg"
-        alt={`${evidence.title} placeholder visual`}
+        alt={evidence.title}
         width={1800}
         height={2400}
         className="h-72 w-full object-cover object-center"
       />
-      <figcaption className="border-t border-white/10 px-4 py-3 text-xs uppercase tracking-[0.22em] text-slate-400">
-        Industrial placeholder asset
-      </figcaption>
     </figure>
   );
 }

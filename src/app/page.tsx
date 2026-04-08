@@ -85,7 +85,7 @@ export default async function Home() {
             <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10">
               <Image
                 src="/images/mara-dossier-portrait.jpg"
-                alt="Mara Vale dossier portrait placeholder"
+                alt="Mara Vale"
                 width={1200}
                 height={1800}
                 className="h-72 w-full object-cover"

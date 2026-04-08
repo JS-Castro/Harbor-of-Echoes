@@ -187,7 +187,6 @@ export function getBoardSeed(caseSlug: string, locale: AppLocale | CaseLocaleCod
           id: `${entity.slug}-${item.code}-${index}`,
           source: entity.slug,
           target: item.code,
-          label: index === 0 ? "linked" : undefined,
         };
       })
       .filter((edge): edge is NonNullable<typeof edge> => edge !== null),

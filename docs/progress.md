@@ -17,6 +17,10 @@ Implemented:
 - first interactive investigation board using React Flow
 - local board session persistence with Zustand
 - initial free-use placeholder image pack integrated into the homepage
+- bilingual UI with `English` and `pt-PT`
+- locale switcher persisted by cookie
+- pt-PT localized case content overrides for case, entities, evidence, events, and locations
+- evidence detail and entity dossier pages upgraded with placeholder visuals
 
 ## Key Documents
 
@@ -43,6 +47,8 @@ Implemented:
 ## Data and Persistence
 
 - case content currently loads from `data/cases/vale-disappearance/*.json`
+- localized case content is composed through `src/lib/case-vale-disappearance.locales.ts`
+- UI copy dictionaries live in `src/lib/i18n.ts`
 - Prisma schema exists in `prisma/schema.prisma`
 - Prisma seed exists in `prisma/seed.ts`
 - board layout persists locally in browser storage by case slug
@@ -68,25 +74,28 @@ Known environment constraint:
 
 ## Most Recent Published Commits
 
+- `42f0461` `feat: add bilingual UI and visual placeholders`
 - `1754fb4` `feat: add interactive investigation board`
 - `df1d13b` `feat: add prisma seed workflow`
 - `1961753` `feat: scaffold investigation app foundation`
 
 ## Current Uncommitted Work
 
-- `src/app/page.tsx`
-- `docs/asset-attribution.md`
-- `docs/progress.md`
-- `public/images/hero-harbor-night.jpg`
-- `public/images/mara-dossier-portrait.jpg`
-- `public/images/evidence-turbine-interior.jpg`
+None. Working tree is currently clean.
 
 ## Next Steps
 
 ### Immediate
 
-- review placeholder image integration
-- commit and push asset placeholders
+- review and refine `pt-PT` wording so it reads naturally and consistently across the game
+- scan the UI for any remaining English or mixed-register text in Portuguese mode
+- decide the minimum test surface for the current phase
+
+### Testing and CI
+
+- install a test runner
+- add a small initial suite for i18n, case data composition, and critical route-level logic
+- add a GitHub Actions workflow to run `lint`, `test`, and `build`
 
 ### After That
 
@@ -98,4 +107,8 @@ Known environment constraint:
 
 If a future session needs to resume quickly:
 
-`Continue Harbor of Echoes from docs/progress.md, review any pending stock placeholder integration, then keep moving evidence/entity visuals forward before replacing placeholders with project-owned art.`
+`Continue Harbor of Echoes from docs/progress.md, audit pt-PT consistency across the UI and case content, then add tests plus a GitHub Actions pipeline for lint, test, and build.`
+
+## Agent Collaboration Preference
+
+- Future AI agents working on this project may freely spawn additional sub-agents whenever that helps divide independent workstreams, speed up analysis, or parallelize implementation and verification.
