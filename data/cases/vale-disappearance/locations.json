@@ -1,0 +1,107 @@
+[
+  {
+    "id": "location-tidal-plant",
+    "caseId": "case-vale-disappearance",
+    "slug": "tidal-plant",
+    "name": "Blackwake Tidal Plant",
+    "type": "site",
+    "summary": "Industrial facility where the tidal array is monitored and the safety records are kept.",
+    "description": "The plant sits at the edge of the harbor channel and is the center of the safety scandal.",
+    "latitude": null,
+    "longitude": null,
+    "relatedEntitySlugs": [
+      "blackwake-energy",
+      "elena-voss",
+      "deputy-soren-pike"
+    ]
+  },
+  {
+    "id": "location-old-harbor",
+    "caseId": "case-vale-disappearance",
+    "slug": "old-harbor",
+    "name": "Old Harbor",
+    "type": "site",
+    "summary": "Historic port area where Tomas works and where the final meeting begins.",
+    "description": "A narrow working harbor with service roads, perimeter gates, and tired lighting.",
+    "latitude": null,
+    "longitude": null,
+    "relatedEntitySlugs": [
+      "tomas-reed",
+      "iris-fen"
+    ]
+  },
+  {
+    "id": "location-cliff-path",
+    "caseId": "case-vale-disappearance",
+    "slug": "cliff-path",
+    "name": "Cliff Path",
+    "type": "route",
+    "summary": "Wet coastal path above the storm channel where the confrontation turns physical.",
+    "description": "The barrier post, lower maintenance ledge, and slip zone are all relevant to the forensic reconstruction.",
+    "latitude": null,
+    "longitude": null,
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "deputy-soren-pike",
+      "tomas-reed"
+    ]
+  },
+  {
+    "id": "location-lighthouse-road",
+    "caseId": "case-vale-disappearance",
+    "slug": "lighthouse-road",
+    "name": "Lighthouse Road",
+    "type": "route",
+    "summary": "Upper road used by patrol vehicles and one of the key contradiction points in the timeline.",
+    "description": "CCTV and traffic data place Pike near this road at the exact time he later says he was elsewhere.",
+    "latitude": null,
+    "longitude": null,
+    "relatedEntitySlugs": [
+      "deputy-soren-pike"
+    ]
+  },
+  {
+    "id": "location-maras-flat",
+    "caseId": "case-vale-disappearance",
+    "slug": "maras-rented-flat",
+    "name": "Mara's Rented Flat",
+    "type": "interior",
+    "summary": "Temporary home where Mara organizes the evidence packet and leaves for the final meeting.",
+    "description": "The apartment contains the notebook, phone traces, and the signal that she was still actively working the case.",
+    "latitude": null,
+    "longitude": null,
+    "relatedEntitySlugs": [
+      "mara-vale"
+    ]
+  },
+  {
+    "id": "location-records-office",
+    "caseId": "case-vale-disappearance",
+    "slug": "records-office",
+    "name": "Records Office",
+    "type": "site",
+    "summary": "Municipal archive access point where Mara requests environmental records.",
+    "description": "A bureaucratic choke point that shows how the town manages information and suppresses complaints.",
+    "latitude": null,
+    "longitude": null,
+    "relatedEntitySlugs": [
+      "jonah-quill",
+      "deputy-soren-pike"
+    ]
+  },
+  {
+    "id": "location-ferry-locker",
+    "caseId": "case-vale-disappearance",
+    "slug": "ferry-terminal-locker",
+    "name": "Ferry Terminal Locker",
+    "type": "interior",
+    "summary": "Dead-drop locker used to store Mara's duplicate evidence packet.",
+    "description": "The receipt proves that Mara planned for publication and feared the original files could be taken from her.",
+    "latitude": null,
+    "longitude": null,
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "jonah-quill"
+    ]
+  }
+]

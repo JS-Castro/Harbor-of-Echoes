@@ -1,0 +1,312 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CaseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EntityType {
+  PERSON
+  ORGANIZATION
+  LOCATION
+  OBJECT
+}
+
+enum EvidenceType {
+  NOTE
+  PHOTO
+  MESSAGE
+  REPORT
+  TRANSCRIPT
+  AUDIO
+  LOG
+}
+
+enum ConfidenceLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TimePrecision {
+  EXACT
+  APPROXIMATE
+  DATE_ONLY
+}
+
+enum EventCertainty {
+  CONFIRMED
+  PLAUSIBLE
+  DISPUTED
+}
+
+enum ConnectionNodeType {
+  CASE
+  ENTITY
+  EVIDENCE
+  EVENT
+  LOCATION
+  HYPOTHESIS
+}
+
+enum RuleType {
+  VIEW_EVIDENCE
+  OPEN_ENTITY
+  CREATE_BOARD_LINK
+  INSPECT_TIMELINE_EVENT
+}
+
+enum SessionStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum HypothesisStatus {
+  DRAFT
+  REVIEWED
+  SUBMITTED
+}
+
+enum HypothesisEvidenceStance {
+  SUPPORT
+  CONTRADICT
+  UNRESOLVED
+}
+
+model Case {
+  id             String       @id @default(cuid())
+  slug           String       @unique
+  title          String
+  tagline        String?
+  summary        String
+  status         CaseStatus   @default(DRAFT)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  entities       Entity[]
+  evidence       Evidence[]
+  events         Event[]
+  locations      Location[]
+  connections    Connection[]
+  unlockRules    UnlockRule[]
+  sessions       Session[]
+}
+
+model Entity {
+  id             String       @id @default(cuid())
+  caseId         String
+  slug           String
+  name           String
+  type           EntityType
+  summary        String
+  description    String
+  publicNotes    String?
+  hiddenNotes    String?
+  portraitUrl    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  case           Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  eventLinks     EventEntity[]
+
+  @@unique([caseId, slug])
+}
+
+model Evidence {
+  id             String           @id @default(cuid())
+  caseId         String
+  slug           String
+  code           String
+  title          String
+  type           EvidenceType
+  sourceLabel    String
+  summary        String
+  content        Json
+  confidence     ConfidenceLevel
+  discoveryPhase Int
+  sortDate       DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  case           Case             @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  sessionEntries SessionEvidence[]
+  hypothesisLinks HypothesisEvidence[]
+
+  @@unique([caseId, slug])
+  @@unique([caseId, code])
+}
+
+model Event {
+  id             String           @id @default(cuid())
+  caseId         String
+  locationId     String?
+  slug           String
+  title          String
+  description    String
+  eventTime      DateTime?
+  timePrecision  TimePrecision    @default(EXACT)
+  certainty      EventCertainty   @default(CONFIRMED)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  case           Case             @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  location       Location?        @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  participants   EventEntity[]
+
+  @@unique([caseId, slug])
+}
+
+model EventEntity {
+  id             String       @id @default(cuid())
+  eventId        String
+  entityId       String
+  roleLabel      String?
+  event          Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  entity         Entity       @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, entityId])
+}
+
+model Location {
+  id             String       @id @default(cuid())
+  caseId         String
+  slug           String
+  name           String
+  summary        String
+  latitude       Decimal?     @db.Decimal(9, 6)
+  longitude      Decimal?     @db.Decimal(9, 6)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  case           Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  events         Event[]
+
+  @@unique([caseId, slug])
+}
+
+model Connection {
+  id             String             @id @default(cuid())
+  caseId         String
+  fromType       ConnectionNodeType
+  fromRefId      String
+  toType         ConnectionNodeType
+  toRefId        String
+  relationship   String
+  strength       Int                @default(1)
+  isHidden       Boolean            @default(false)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  case           Case               @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId, fromType, fromRefId])
+  @@index([caseId, toType, toRefId])
+}
+
+model UnlockRule {
+  id             String       @id @default(cuid())
+  caseId         String
+  targetType     ConnectionNodeType
+  targetRefId    String
+  ruleType       RuleType
+  ruleConfig     Json
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  case           Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id                String            @id @default(cuid())
+  caseId            String
+  playerLabel       String?
+  startedAt         DateTime          @default(now())
+  lastActiveAt      DateTime          @updatedAt
+  status            SessionStatus     @default(ACTIVE)
+  case              Case              @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  evidenceEntries   SessionEvidence[]
+  boardNodes        BoardNode[]
+  boardEdges        BoardEdge[]
+  hypotheses        Hypothesis[]
+  reportSubmission  ReportSubmission?
+}
+
+model SessionEvidence {
+  id             String       @id @default(cuid())
+  sessionId      String
+  evidenceId     String
+  discoveredAt   DateTime     @default(now())
+  isRead         Boolean      @default(false)
+  isPinned       Boolean      @default(false)
+  session        Session      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  evidence       Evidence     @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, evidenceId])
+}
+
+model BoardNode {
+  id             String       @id @default(cuid())
+  sessionId      String
+  nodeType       ConnectionNodeType
+  nodeRefId      String
+  posX           Float
+  posY           Float
+  note           String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  session        Session      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  outgoingEdges  BoardEdge[]  @relation("BoardEdgeFrom")
+  incomingEdges  BoardEdge[]  @relation("BoardEdgeTo")
+}
+
+model BoardEdge {
+  id             String       @id @default(cuid())
+  sessionId      String
+  fromNodeId     String
+  toNodeId       String
+  label          String?
+  note           String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  session        Session      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  fromNode       BoardNode    @relation("BoardEdgeFrom", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNode         BoardNode    @relation("BoardEdgeTo", fields: [toNodeId], references: [id], onDelete: Cascade)
+}
+
+model Hypothesis {
+  id               String                 @id @default(cuid())
+  sessionId        String
+  title            String
+  claim            String
+  confidence       Int                    @default(0)
+  status           HypothesisStatus       @default(DRAFT)
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  session          Session                @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  evidenceLinks    HypothesisEvidence[]
+}
+
+model HypothesisEvidence {
+  id               String                    @id @default(cuid())
+  hypothesisId     String
+  evidenceId       String
+  stance           HypothesisEvidenceStance
+  hypothesis       Hypothesis                @relation(fields: [hypothesisId], references: [id], onDelete: Cascade)
+  evidence         Evidence                  @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+
+  @@unique([hypothesisId, evidenceId])
+}
+
+model ReportSubmission {
+  id                   String       @id @default(cuid())
+  sessionId            String       @unique
+  causeAnswer          String
+  responsibilityAnswer String
+  motiveAnswer         String
+  analysisNotes        String?
+  score                Int          @default(0)
+  endingType           String
+  submittedAt          DateTime     @default(now())
+  session              Session      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}

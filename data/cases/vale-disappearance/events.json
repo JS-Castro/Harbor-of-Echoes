@@ -1,0 +1,261 @@
+[
+  {
+    "id": "event-mara-starts-investigation",
+    "caseId": "case-vale-disappearance",
+    "slug": "mara-starts-investigation",
+    "title": "Mara Starts Investigation",
+    "description": "Mara begins tracing the mismatch between marine damage and the published safety data.",
+    "eventTime": "2026-03-10T09:00:00Z",
+    "timePrecision": "day",
+    "certainty": "high",
+    "locationSlug": "maras-rented-flat",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "blackwake-energy",
+      "turbine-3"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-001",
+      "EV-006"
+    ]
+  },
+  {
+    "id": "event-mara-meets-jonah",
+    "caseId": "case-vale-disappearance",
+    "slug": "mara-meets-jonah",
+    "title": "Mara Meets Jonah",
+    "description": "Mara briefs Jonah on the publication risk and asks him to wait until chain of custody is confirmed.",
+    "eventTime": "2026-03-18T14:00:00Z",
+    "timePrecision": "day",
+    "certainty": "medium",
+    "locationSlug": "records-office",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "jonah-quill"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-005",
+      "EV-019"
+    ]
+  },
+  {
+    "id": "event-maintenance-memo-distributed",
+    "caseId": "case-vale-disappearance",
+    "slug": "maintenance-memo-distributed",
+    "title": "Maintenance Memo Distributed",
+    "description": "Blackwake tells staff not to discuss servicing or night maintenance runs.",
+    "eventTime": "2026-03-15T08:00:00Z",
+    "timePrecision": "day",
+    "certainty": "high",
+    "locationSlug": "tidal-plant",
+    "relatedEntitySlugs": [
+      "blackwake-energy",
+      "elena-voss"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-007"
+    ]
+  },
+  {
+    "id": "event-duplicate-inspection-report-created",
+    "caseId": "case-vale-disappearance",
+    "slug": "duplicate-inspection-report-created",
+    "title": "Duplicate Inspection Report Created",
+    "description": "Two conflicting inspection reports are present in the contractor archive.",
+    "eventTime": "2026-03-12T12:00:00Z",
+    "timePrecision": "day",
+    "certainty": "high",
+    "locationSlug": "tidal-plant",
+    "relatedEntitySlugs": [
+      "blackwake-energy",
+      "turbine-3"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-008",
+      "EV-009"
+    ]
+  },
+  {
+    "id": "event-dead-drop-prepared",
+    "caseId": "case-vale-disappearance",
+    "slug": "dead-drop-prepared",
+    "title": "Dead-Drop Prepared",
+    "description": "Mara stores a duplicate evidence packet in the ferry terminal locker.",
+    "eventTime": "2026-03-19T17:30:00Z",
+    "timePrecision": "day",
+    "certainty": "high",
+    "locationSlug": "ferry-terminal-locker",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "jonah-quill"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-018"
+    ]
+  },
+  {
+    "id": "event-mara-leaves-flat",
+    "caseId": "case-vale-disappearance",
+    "slug": "mara-leaves-flat",
+    "title": "Mara Leaves Flat",
+    "description": "Mara exits her apartment with her satchel, recorder, and phone.",
+    "eventTime": "2026-03-20T20:10:00Z",
+    "timePrecision": "minute",
+    "certainty": "high",
+    "locationSlug": "maras-rented-flat",
+    "relatedEntitySlugs": [
+      "mara-vale"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-002",
+      "EV-015"
+    ]
+  },
+  {
+    "id": "event-harbor-approach-seen",
+    "caseId": "case-vale-disappearance",
+    "slug": "harbor-approach-seen",
+    "title": "Harbor Approach Seen",
+    "description": "CCTV catches Mara near the harbor service road.",
+    "eventTime": "2026-03-20T20:42:00Z",
+    "timePrecision": "minute",
+    "certainty": "high",
+    "locationSlug": "old-harbor",
+    "relatedEntitySlugs": [
+      "mara-vale"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-002"
+    ]
+  },
+  {
+    "id": "event-pike-vehicle-near-lighthouse-road",
+    "caseId": "case-vale-disappearance",
+    "slug": "pike-vehicle-near-lighthouse-road",
+    "title": "Pike Vehicle Near Lighthouse Road",
+    "description": "Traffic data places Pike's patrol car near the lighthouse road during the critical window.",
+    "eventTime": "2026-03-20T21:11:00Z",
+    "timePrecision": "minute",
+    "certainty": "high",
+    "locationSlug": "lighthouse-road",
+    "relatedEntitySlugs": [
+      "deputy-soren-pike"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-010"
+    ]
+  },
+  {
+    "id": "event-tomas-arrives-at-old-harbor",
+    "caseId": "case-vale-disappearance",
+    "slug": "tomas-arrives-at-old-harbor",
+    "title": "Tomas Arrives at Old Harbor",
+    "description": "Tomas enters the perimeter before the confrontation.",
+    "eventTime": "2026-03-20T21:03:00Z",
+    "timePrecision": "minute",
+    "certainty": "high",
+    "locationSlug": "old-harbor",
+    "relatedEntitySlugs": [
+      "tomas-reed"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-003",
+      "EV-011"
+    ]
+  },
+  {
+    "id": "event-elena-calls-tomas",
+    "caseId": "case-vale-disappearance",
+    "slug": "elena-calls-tomas",
+    "title": "Elena Calls Tomas",
+    "description": "Elena calls Tomas for forty-seven seconds while Mara is at the cliff path.",
+    "eventTime": "2026-03-20T21:20:00Z",
+    "timePrecision": "minute",
+    "certainty": "high",
+    "locationSlug": "tidal-plant",
+    "relatedEntitySlugs": [
+      "elena-voss",
+      "tomas-reed"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-011"
+    ]
+  },
+  {
+    "id": "event-confrontation-on-cliff-path",
+    "caseId": "case-vale-disappearance",
+    "slug": "confrontation-on-cliff-path",
+    "title": "Confrontation on Cliff Path",
+    "description": "The argument escalates and Pike demands Mara's satchel and recorder.",
+    "eventTime": "2026-03-20T21:26:00Z",
+    "timePrecision": "minute",
+    "certainty": "high",
+    "locationSlug": "cliff-path",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "deputy-soren-pike",
+      "tomas-reed"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-012",
+      "EV-016",
+      "EV-017"
+    ]
+  },
+  {
+    "id": "event-mara-falls",
+    "caseId": "case-vale-disappearance",
+    "slug": "mara-falls",
+    "title": "Mara Falls",
+    "description": "Mara slips over the storm barrier onto the maintenance ledge below.",
+    "eventTime": "2026-03-20T21:28:00Z",
+    "timePrecision": "minute",
+    "certainty": "high",
+    "locationSlug": "cliff-path",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "deputy-soren-pike",
+      "tomas-reed"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-016",
+      "EV-017"
+    ]
+  },
+  {
+    "id": "event-access-log-deleted",
+    "caseId": "case-vale-disappearance",
+    "slug": "access-log-deleted",
+    "title": "Access Log Deleted",
+    "description": "One plant access entry is removed after the scene is contained.",
+    "eventTime": "2026-03-20T22:02:00Z",
+    "timePrecision": "minute",
+    "certainty": "high",
+    "locationSlug": "tidal-plant",
+    "relatedEntitySlugs": [
+      "blackwake-energy",
+      "elena-voss"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-014"
+    ]
+  },
+  {
+    "id": "event-missing-person-report-filed",
+    "caseId": "case-vale-disappearance",
+    "slug": "missing-person-report-filed",
+    "title": "Missing Person Report Filed",
+    "description": "Pike files Mara as missing rather than injured and the search starts too late.",
+    "eventTime": "2026-03-21T08:00:00Z",
+    "timePrecision": "day",
+    "certainty": "medium",
+    "locationSlug": "records-office",
+    "relatedEntitySlugs": [
+      "deputy-soren-pike",
+      "mara-vale"
+    ],
+    "relatedEvidenceCodes": [
+      "EV-004"
+    ]
+  }
+]

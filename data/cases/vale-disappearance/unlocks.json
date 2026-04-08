@@ -1,0 +1,144 @@
+[
+  {
+    "id": "unlock-start-evidence-batch",
+    "caseId": "case-vale-disappearance",
+    "targetType": "evidenceBatch",
+    "targetCode": "phase-0-start",
+    "ruleType": "available_from_start",
+    "ruleConfig": {
+      "evidenceCodes": [
+        "EV-001",
+        "EV-002",
+        "EV-003",
+        "EV-004",
+        "EV-005",
+        "EV-012"
+      ]
+    },
+    "sortOrder": 10,
+    "notes": "Opening evidence set for the case introduction."
+  },
+  {
+    "id": "unlock-corporate-fault-batch",
+    "caseId": "case-vale-disappearance",
+    "targetType": "evidenceBatch",
+    "targetCode": "phase-1-corporate-fault",
+    "ruleType": "requires_all",
+    "ruleConfig": {
+      "requiresEvidenceCodes": [
+        "EV-001"
+      ],
+      "requiresEntitySlugs": [
+        "blackwake-energy"
+      ],
+      "rewardsEvidenceCodes": [
+        "EV-006",
+        "EV-007",
+        "EV-008",
+        "EV-009",
+        "EV-015",
+        "EV-019"
+      ]
+    },
+    "sortOrder": 20,
+    "notes": "Unlocks the safety-scandal material once the player connects Mara's notes to Blackwake."
+  },
+  {
+    "id": "unlock-night-reconstruction-batch",
+    "caseId": "case-vale-disappearance",
+    "targetType": "evidenceBatch",
+    "targetCode": "phase-2-night-reconstruction",
+    "ruleType": "requires_all",
+    "ruleConfig": {
+      "requiresEvidenceCodes": [
+        "EV-010",
+        "EV-011",
+        "EV-013",
+        "EV-014"
+      ],
+      "rewardsEvidenceCodes": [
+        "EV-010",
+        "EV-011",
+        "EV-013",
+        "EV-014",
+        "EV-016",
+        "EV-017"
+      ]
+    },
+    "sortOrder": 30,
+    "notes": "Opens the confrontation timeline after the player has enough corporate context."
+  },
+  {
+    "id": "unlock-cover-up-batch",
+    "caseId": "case-vale-disappearance",
+    "targetType": "evidenceBatch",
+    "targetCode": "phase-3-cover-up",
+    "ruleType": "requires_all",
+    "ruleConfig": {
+      "requiresEvidenceCodes": [
+        "EV-015",
+        "EV-017"
+      ],
+      "rewardsEvidenceCodes": [
+        "EV-018",
+        "EV-020"
+      ]
+    },
+    "sortOrder": 40,
+    "notes": "Surface the dead-drop and the earlier archive gap once the scene is understood."
+  },
+  {
+    "id": "unlock-entity-profiles",
+    "caseId": "case-vale-disappearance",
+    "targetType": "entityBatch",
+    "targetCode": "profile-core-cast",
+    "ruleType": "available_from_start",
+    "ruleConfig": {
+      "entitySlugs": [
+        "mara-vale",
+        "elena-voss",
+        "deputy-soren-pike",
+        "tomas-reed",
+        "jonah-quill",
+        "iris-fen",
+        "blackwake-energy",
+        "turbine-3"
+      ]
+    },
+    "sortOrder": 5,
+    "notes": "Core cast and infrastructure should be available as soon as the case opens."
+  },
+  {
+    "id": "unlock-final-report",
+    "caseId": "case-vale-disappearance",
+    "targetType": "report",
+    "targetCode": "final-report",
+    "ruleType": "requires_case_progress",
+    "ruleConfig": {
+      "requiredEvidenceCodes": [
+        "EV-001",
+        "EV-002",
+        "EV-003",
+        "EV-004",
+        "EV-005",
+        "EV-006",
+        "EV-007",
+        "EV-008",
+        "EV-009",
+        "EV-010",
+        "EV-011",
+        "EV-012",
+        "EV-013",
+        "EV-014",
+        "EV-015",
+        "EV-016",
+        "EV-017",
+        "EV-018",
+        "EV-019",
+        "EV-020"
+      ]
+    },
+    "sortOrder": 100,
+    "notes": "The player can submit the final theory once the case archive is effectively complete."
+  }
+]

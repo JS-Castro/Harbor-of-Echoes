@@ -1,0 +1,29 @@
+{
+  "id": "case-vale-disappearance",
+  "slug": "vale-disappearance",
+  "title": "Case 01: The Vale Disappearance",
+  "tagline": "The sea kept the sound. The town buried the rest.",
+  "summary": "Mara Vale, an environmental investigator, vanishes after uncovering falsified turbine safety data tied to Blackwake Energy. The player reconstructs the night, separates rumor from proof, and decides whether the truth is disappearance, murder, or a cover-up after an accidental fall.",
+  "status": "draft",
+  "setting": "Storm-beaten coastal town with a tidal energy facility, harbor roads, and a restricted records office.",
+  "themes": [
+    "profit versus public safety",
+    "local loyalty versus truth",
+    "institutional rot hidden behind economic dependence",
+    "ambiguity in motive but clarity in responsibility"
+  ],
+  "canonicalQuestion": "What happened to Mara Vale?",
+  "canonicalOutcome": "Mara died after a coercive confrontation; Elena Voss, Deputy Soren Pike, and Tomas Reed participated in the concealment.",
+  "mvpScope": {
+    "evidenceCount": 20,
+    "entityCount": 8,
+    "locationCount": 7,
+    "eventCount": 14,
+    "primaryEnding": "strong"
+  },
+  "scoringAxes": [
+    "cause",
+    "responsibility",
+    "motive"
+  ]
+}

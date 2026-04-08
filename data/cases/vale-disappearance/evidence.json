@@ -1,0 +1,425 @@
+[
+  {
+    "id": "evidence-ev-001",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-001",
+    "slug": "field-notebook-excerpt",
+    "title": "Field Notebook Excerpt",
+    "type": "note",
+    "sourceLabel": "Mara Vale",
+    "summary": "Handwritten notes describing marine anomalies and concern about falsified reports.",
+    "content": "Mara notes dead zones near the discharge channel, unusual vibration noise from Turbine 3, and the suspicion that the published safety record is incomplete.",
+    "confidence": "high",
+    "discoveryPhase": 0,
+    "sortDate": "2026-03-10",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "blackwake-energy",
+      "turbine-3"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "evidence-ev-002",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-002",
+    "slug": "harbor-cctv-frame",
+    "title": "Harbor CCTV Frame",
+    "type": "photo",
+    "sourceLabel": "Harbor camera",
+    "summary": "Frame showing Mara approaching the service road at 20:42.",
+    "content": "A grainy still captures Mara alone with her satchel near the harbor service road shortly before the disappearance window.",
+    "confidence": "high",
+    "discoveryPhase": 0,
+    "sortDate": "2026-03-20T20:42:00Z",
+    "relatedEntitySlugs": [
+      "mara-vale"
+    ],
+    "relatedLocationSlugs": [
+      "old-harbor"
+    ]
+  },
+  {
+    "id": "evidence-ev-003",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-003",
+    "slug": "phone-message-from-tomas",
+    "title": "Phone Message from Tomas",
+    "type": "message",
+    "sourceLabel": "Tomas Reed",
+    "summary": "Message inviting Mara to a late meeting.",
+    "content": "Tomas asks Mara to meet because he needs to tell her something before she publishes. The message is calm, deliberate, and time-stamped the day before she vanished.",
+    "confidence": "high",
+    "discoveryPhase": 0,
+    "sortDate": "2026-03-19",
+    "relatedEntitySlugs": [
+      "tomas-reed",
+      "mara-vale"
+    ],
+    "relatedLocationSlugs": [
+      "old-harbor"
+    ]
+  },
+  {
+    "id": "evidence-ev-004",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-004",
+    "slug": "official-missing-person-report",
+    "title": "Official Missing Person Report",
+    "type": "report",
+    "sourceLabel": "Deputy Pike",
+    "summary": "Police report that frames the event as a disappearance and delays the search.",
+    "content": "The report emphasizes uncertainty, labels the case sensitive, and omits the stronger signs of injury or foul play.",
+    "confidence": "medium",
+    "discoveryPhase": 0,
+    "sortDate": "2026-03-21",
+    "relatedEntitySlugs": [
+      "deputy-soren-pike",
+      "mara-vale"
+    ],
+    "relatedLocationSlugs": [
+      "records-office"
+    ]
+  },
+  {
+    "id": "evidence-ev-005",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-005",
+    "slug": "interview-transcript-jonah-quill",
+    "title": "Interview Transcript: Jonah Quill",
+    "type": "transcript",
+    "sourceLabel": "Journalist interview",
+    "summary": "Jonah explains that Mara had publishable material and feared interference.",
+    "content": "Jonah confirms that Mara had enough material for a story and had started asking how to verify chain of custody before going public.",
+    "confidence": "medium",
+    "discoveryPhase": 0,
+    "sortDate": "2026-03-18",
+    "relatedEntitySlugs": [
+      "jonah-quill",
+      "mara-vale"
+    ],
+    "relatedLocationSlugs": [
+      "records-office"
+    ]
+  },
+  {
+    "id": "evidence-ev-006",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-006",
+    "slug": "environmental-photo-set",
+    "title": "Environmental Photo Set",
+    "type": "photo",
+    "sourceLabel": "Mara camera",
+    "summary": "Dead fish and chemical foam near the discharge channel.",
+    "content": "The photographs show environmental damage that does not match the public safety messaging from Blackwake.",
+    "confidence": "high",
+    "discoveryPhase": 1,
+    "sortDate": "2026-03-14",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "blackwake-energy"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "evidence-ev-007",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-007",
+    "slug": "internal-maintenance-memo",
+    "title": "Internal Maintenance Memo",
+    "type": "report",
+    "sourceLabel": "Blackwake",
+    "summary": "Memo instructing employees not to discuss servicing.",
+    "content": "Staff are told to refer all questions about night maintenance runs to operations and not to discuss turbine servicing with outside parties.",
+    "confidence": "medium",
+    "discoveryPhase": 1,
+    "sortDate": "2026-03-15",
+    "relatedEntitySlugs": [
+      "blackwake-energy",
+      "elena-voss"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "evidence-ev-008",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-008",
+    "slug": "duplicate-inspection-report-a",
+    "title": "Duplicate Inspection Report A",
+    "type": "report",
+    "sourceLabel": "Contractor archive",
+    "summary": "Safe structural summary that conflicts with the dangerous version.",
+    "content": "This copy of the inspection report says the turbine remains within safe operating tolerances and requires only routine maintenance.",
+    "confidence": "medium",
+    "discoveryPhase": 1,
+    "sortDate": "2026-03-12",
+    "relatedEntitySlugs": [
+      "blackwake-energy",
+      "turbine-3"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "evidence-ev-009",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-009",
+    "slug": "duplicate-inspection-report-b",
+    "title": "Duplicate Inspection Report B",
+    "type": "report",
+    "sourceLabel": "Contractor archive",
+    "summary": "Dangerous vibration fault and urgent repair warning.",
+    "content": "This version warns that the turbine could fail under stress and that the harbor channel could be affected if the fault is not addressed immediately.",
+    "confidence": "high",
+    "discoveryPhase": 1,
+    "sortDate": "2026-03-12",
+    "relatedEntitySlugs": [
+      "blackwake-energy",
+      "turbine-3"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "evidence-ev-010",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-010",
+    "slug": "patrol-car-traffic-camera",
+    "title": "Patrol Car Traffic Camera",
+    "type": "photo",
+    "sourceLabel": "Municipal road camera",
+    "summary": "Pike's vehicle near Lighthouse Road at 21:11.",
+    "content": "The traffic frame contradicts Pike's later statement about where he was during the disappearance window.",
+    "confidence": "high",
+    "discoveryPhase": 2,
+    "sortDate": "2026-03-20T21:11:00Z",
+    "relatedEntitySlugs": [
+      "deputy-soren-pike"
+    ],
+    "relatedLocationSlugs": [
+      "lighthouse-road"
+    ]
+  },
+  {
+    "id": "evidence-ev-011",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-011",
+    "slug": "call-log-snapshot",
+    "title": "Call Log Snapshot",
+    "type": "log",
+    "sourceLabel": "Phone records",
+    "summary": "Metadata showing Elena called Tomas at 21:20.",
+    "content": "The call lasts forty-seven seconds and lands directly in the middle of the confrontation window, tying Elena to the night of the disappearance.",
+    "confidence": "high",
+    "discoveryPhase": 2,
+    "sortDate": "2026-03-20T21:20:00Z",
+    "relatedEntitySlugs": [
+      "elena-voss",
+      "tomas-reed"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant",
+      "old-harbor"
+    ]
+  },
+  {
+    "id": "evidence-ev-012",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-012",
+    "slug": "witness-statement-iris-fen",
+    "title": "Witness Statement: Iris Fen",
+    "type": "transcript",
+    "sourceLabel": "Harbor witness",
+    "summary": "Statement describing an argument and two voices near the cliff path.",
+    "content": "Iris heard the argument carried by the wind from the cliff path and believed there were two men speaking with Mara before the noise stopped.",
+    "confidence": "medium",
+    "discoveryPhase": 0,
+    "sortDate": "2026-03-21",
+    "relatedEntitySlugs": [
+      "iris-fen",
+      "mara-vale"
+    ],
+    "relatedLocationSlugs": [
+      "cliff-path",
+      "old-harbor"
+    ]
+  },
+  {
+    "id": "evidence-ev-013",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-013",
+    "slug": "redacted-witness-statement",
+    "title": "Redacted Witness Statement",
+    "type": "report",
+    "sourceLabel": "Police file",
+    "summary": "Official copy removed the reference to the second male voice.",
+    "content": "The archive version has a redaction where the second male voice should have been, suggesting the record was altered after the fact.",
+    "confidence": "high",
+    "discoveryPhase": 2,
+    "sortDate": "2026-03-22",
+    "relatedEntitySlugs": [
+      "iris-fen",
+      "deputy-soren-pike"
+    ],
+    "relatedLocationSlugs": [
+      "records-office"
+    ]
+  },
+  {
+    "id": "evidence-ev-014",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-014",
+    "slug": "plant-access-log-export",
+    "title": "Plant Access Log Export",
+    "type": "log",
+    "sourceLabel": "Blackwake plant",
+    "summary": "Suspicious deletion around 22:02.",
+    "content": "One access entry disappears from the export, and the deletion aligns with the point where the cover-up becomes active rather than passive.",
+    "confidence": "medium",
+    "discoveryPhase": 2,
+    "sortDate": "2026-03-20T22:02:00Z",
+    "relatedEntitySlugs": [
+      "blackwake-energy",
+      "elena-voss"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "evidence-ev-015",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-015",
+    "slug": "voicemail-draft",
+    "title": "Voicemail Draft",
+    "type": "audio",
+    "sourceLabel": "Mara phone",
+    "summary": "Mara says she found the piece that proves intent.",
+    "content": "The draft voicemail suggests Mara believed she had proof not just of negligence, but of deliberate concealment.",
+    "confidence": "high",
+    "discoveryPhase": 1,
+    "sortDate": "2026-03-17",
+    "relatedEntitySlugs": [
+      "mara-vale"
+    ],
+    "relatedLocationSlugs": [
+      "maras-rented-flat"
+    ]
+  },
+  {
+    "id": "evidence-ev-016",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-016",
+    "slug": "recorder-fragment",
+    "title": "Recorder Fragment",
+    "type": "audio",
+    "sourceLabel": "Recovered device fragment",
+    "summary": "Damaged audio with argument, demand for the bag, and a slip noise.",
+    "content": "The fragment includes a hostile exchange, a demand for the satchel and recorder, and a sharp change in footing consistent with a fall.",
+    "confidence": "medium",
+    "discoveryPhase": 2,
+    "sortDate": "2026-03-20T21:26:00Z",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "deputy-soren-pike",
+      "tomas-reed"
+    ],
+    "relatedLocationSlugs": [
+      "cliff-path"
+    ]
+  },
+  {
+    "id": "evidence-ev-017",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-017",
+    "slug": "cliff-path-forensic-photos",
+    "title": "Cliff Path Forensic Photos",
+    "type": "photo",
+    "sourceLabel": "Later inspection",
+    "summary": "Broken barrier post, blood traces, and no drag marks.",
+    "content": "The scene suggests a fall followed by movement of the evidence, not a struggle that continued across the ground.",
+    "confidence": "high",
+    "discoveryPhase": 2,
+    "sortDate": "2026-03-21",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "deputy-soren-pike",
+      "tomas-reed"
+    ],
+    "relatedLocationSlugs": [
+      "cliff-path"
+    ]
+  },
+  {
+    "id": "evidence-ev-018",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-018",
+    "slug": "ferry-locker-receipt",
+    "title": "Ferry Locker Receipt",
+    "type": "report",
+    "sourceLabel": "Terminal records",
+    "summary": "Receipt showing Mara created a dead-drop the day before.",
+    "content": "The receipt proves that Mara expected to deliver material indirectly and that she had already prepared for the possibility of interference.",
+    "confidence": "high",
+    "discoveryPhase": 3,
+    "sortDate": "2026-03-19",
+    "relatedEntitySlugs": [
+      "mara-vale",
+      "jonah-quill"
+    ],
+    "relatedLocationSlugs": [
+      "ferry-terminal-locker"
+    ]
+  },
+  {
+    "id": "evidence-ev-019",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-019",
+    "slug": "encrypted-package-partial-decrypt",
+    "title": "Encrypted Package Partial Decrypt",
+    "type": "report",
+    "sourceLabel": "Jonah Quill",
+    "summary": "Recovered bundle of selected Blackwake records and an unfinished cover note.",
+    "content": "Jonah can open only part of the archive, but the files match Mara's investigative trail and show she was preparing a publishable package.",
+    "confidence": "medium",
+    "discoveryPhase": 3,
+    "sortDate": "2026-03-21",
+    "relatedEntitySlugs": [
+      "jonah-quill",
+      "blackwake-energy",
+      "mara-vale"
+    ],
+    "relatedLocationSlugs": [
+      "records-office"
+    ]
+  },
+  {
+    "id": "evidence-ev-020",
+    "caseId": "case-vale-disappearance",
+    "code": "EV-020",
+    "slug": "prior-complaint-archive-gap",
+    "title": "Prior Complaint Archive Gap",
+    "type": "log",
+    "sourceLabel": "Records office",
+    "summary": "One historical safety complaint was removed from police intake.",
+    "content": "The archive audit shows a gap that predates Mara's disappearance, tying Pike to earlier suppression and strengthening the institutional cover-up theory.",
+    "confidence": "medium",
+    "discoveryPhase": 3,
+    "sortDate": "2026-02-14",
+    "relatedEntitySlugs": [
+      "deputy-soren-pike",
+      "blackwake-energy"
+    ],
+    "relatedLocationSlugs": [
+      "records-office"
+    ]
+  }
+]

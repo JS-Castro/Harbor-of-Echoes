@@ -1,0 +1,181 @@
+[
+  {
+    "id": "entity-mara-vale",
+    "caseId": "case-vale-disappearance",
+    "slug": "mara-vale",
+    "name": "Mara Vale",
+    "type": "person",
+    "role": "environmental investigator",
+    "summary": "Independent investigator who uncovers the turbine safety scandal.",
+    "description": "Mara is methodical, isolated, and increasingly alarmed as she realizes the published reports do not match the coastal damage.",
+    "publicNotes": "Stubborn outsider with a reputation for thorough reporting.",
+    "hiddenNotes": "Stored a duplicate evidence packet in a dead-drop locker and planned to hand the material to Jonah and a regulator.",
+    "relatedEvidenceCodes": [
+      "EV-001",
+      "EV-002",
+      "EV-005",
+      "EV-006",
+      "EV-015",
+      "EV-018"
+    ],
+    "relatedLocationSlugs": [
+      "maras-rented-flat",
+      "ferry-terminal-locker",
+      "cliff-path"
+    ]
+  },
+  {
+    "id": "entity-elena-voss",
+    "caseId": "case-vale-disappearance",
+    "slug": "elena-voss",
+    "name": "Elena Voss",
+    "type": "person",
+    "role": "operations director at Blackwake Energy",
+    "summary": "Executive who learns the files were copied and helps coordinate the cover-up.",
+    "description": "Elena frames herself as protecting the town's economy while quietly authorizing the deletion and replacement of records.",
+    "publicNotes": "Polished corporate leader focused on stability and jobs.",
+    "hiddenNotes": "Did not order murder, but made the concealment possible once the confrontation went wrong.",
+    "relatedEvidenceCodes": [
+      "EV-007",
+      "EV-009",
+      "EV-011",
+      "EV-014",
+      "EV-020"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "entity-deputy-soren-pike",
+    "caseId": "case-vale-disappearance",
+    "slug": "deputy-soren-pike",
+    "name": "Deputy Soren Pike",
+    "type": "person",
+    "role": "deputy officer and archive gatekeeper",
+    "summary": "Local law officer who obstructs outside scrutiny and helps bury the aftermath.",
+    "description": "Pike is the pressure point between municipal authority and Blackwake's interests. He flags Mara's access requests, arrives at the scene, and later files the case as a disappearance.",
+    "publicNotes": "Practical, tired, and always close to official paperwork.",
+    "hiddenNotes": "Previously helped remove an earlier safety complaint from the intake flow.",
+    "relatedEvidenceCodes": [
+      "EV-004",
+      "EV-010",
+      "EV-013",
+      "EV-016",
+      "EV-020"
+    ],
+    "relatedLocationSlugs": [
+      "lighthouse-road",
+      "cliff-path",
+      "records-office",
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "entity-tomas-reed",
+    "caseId": "case-vale-disappearance",
+    "slug": "tomas-reed",
+    "name": "Tomas Reed",
+    "type": "person",
+    "role": "harbor master",
+    "summary": "The man who arranges the final meeting and later helps move evidence.",
+    "description": "Tomas is loyal to the harbor and exposed to the consequences of Blackwake collapsing, which makes him easy to pressure and easy to compromise.",
+    "publicNotes": "A tired civic caretaker who keeps the port functioning.",
+    "hiddenNotes": "He lies about his route that night and debates calling for help after the fall.",
+    "relatedEvidenceCodes": [
+      "EV-003",
+      "EV-011",
+      "EV-016",
+      "EV-019"
+    ],
+    "relatedLocationSlugs": [
+      "old-harbor",
+      "cliff-path"
+    ]
+  },
+  {
+    "id": "entity-jonah-quill",
+    "caseId": "case-vale-disappearance",
+    "slug": "jonah-quill",
+    "name": "Jonah Quill",
+    "type": "person",
+    "role": "local journalist",
+    "summary": "Reporter who receives part of Mara's package and helps establish the timeline.",
+    "description": "Jonah is one of the few people Mara trusts enough to brief before publication. He is useful because he can connect the paper trail to public scrutiny.",
+    "publicNotes": "A persistent nuisance to the town's officials.",
+    "hiddenNotes": "He only receives a partial encrypted package after Mara disappears.",
+    "relatedEvidenceCodes": [
+      "EV-005",
+      "EV-008",
+      "EV-019"
+    ],
+    "relatedLocationSlugs": [
+      "records-office",
+      "ferry-terminal-locker"
+    ]
+  },
+  {
+    "id": "entity-iris-fen",
+    "caseId": "case-vale-disappearance",
+    "slug": "iris-fen",
+    "name": "Iris Fen",
+    "type": "person",
+    "role": "fisherman",
+    "summary": "Witness with an incomplete statement and a fear of retaliation.",
+    "description": "Iris heard the argument near the cliff path and later tries to correct the record, but the official archive copy has already been sanitized.",
+    "publicNotes": "Unreliable witness in the eyes of the town.",
+    "hiddenNotes": "The original statement mentioned two male voices; the archive copy removed one of them.",
+    "relatedEvidenceCodes": [
+      "EV-012",
+      "EV-013"
+    ],
+    "relatedLocationSlugs": [
+      "old-harbor",
+      "cliff-path"
+    ]
+  },
+  {
+    "id": "entity-blackwake-energy",
+    "caseId": "case-vale-disappearance",
+    "slug": "blackwake-energy",
+    "name": "Blackwake Energy",
+    "type": "organization",
+    "role": "tidal infrastructure company",
+    "summary": "The company behind the plant, the safety reports, and the political pressure to keep the case quiet.",
+    "description": "Blackwake depends on the turbine project for the town's economy and uses that leverage to suppress complaints and redirect scrutiny.",
+    "publicNotes": "Local employer and infrastructure operator.",
+    "hiddenNotes": "The company's records show two incompatible inspection reports and a deleted access log entry.",
+    "relatedEvidenceCodes": [
+      "EV-006",
+      "EV-007",
+      "EV-008",
+      "EV-009",
+      "EV-014",
+      "EV-020"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  },
+  {
+    "id": "entity-turbine-3",
+    "caseId": "case-vale-disappearance",
+    "slug": "turbine-3",
+    "name": "Turbine 3",
+    "type": "object",
+    "role": "critical industrial asset",
+    "summary": "The unit with the hidden vibration fault and the strongest forensic trail.",
+    "description": "Turbine 3 is where the safety flaw was suppressed, making it the technical center of the scandal rather than just a background prop.",
+    "publicNotes": "One unit in the tidal array.",
+    "hiddenNotes": "The dangerous version of the inspection report warns that the fault could cause a catastrophic mechanical failure near the harbor channel.",
+    "relatedEvidenceCodes": [
+      "EV-001",
+      "EV-006",
+      "EV-008",
+      "EV-009"
+    ],
+    "relatedLocationSlugs": [
+      "tidal-plant"
+    ]
+  }
+]
