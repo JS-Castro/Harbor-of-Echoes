@@ -14,11 +14,14 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import type { BoardSeed } from "@/lib/case-data";
+import type { AppLocale } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
 import { useBoardStore } from "@/stores/board-store";
 
 type BoardCanvasProps = {
   caseSlug: string;
   seed: BoardSeed;
+  locale: AppLocale;
 };
 
 function InvestigationNode({ data }: NodeProps<Node["data"]>) {
@@ -44,7 +47,8 @@ const nodeTypes = {
   evidence: InvestigationNode,
 };
 
-export function BoardCanvas({ caseSlug, seed }: BoardCanvasProps) {
+export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
+  const dictionary = getDictionary(locale);
   const storedSession = useBoardStore((state) => state.sessions[caseSlug]);
   const hydrateCase = useBoardStore((state) => state.hydrateCase);
   const setNodes = useBoardStore((state) => state.setNodes);
@@ -120,10 +124,10 @@ export function BoardCanvas({ caseSlug, seed }: BoardCanvasProps) {
       <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
         <div>
           <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
-            Session State
+            {dictionary.board.sessionState}
           </p>
           <p className="mt-1 text-sm text-slate-300">
-            Drag nodes to reorganize the case board. Layout is stored locally.
+            {dictionary.board.sessionHelp}
           </p>
         </div>
         <button
@@ -134,7 +138,7 @@ export function BoardCanvas({ caseSlug, seed }: BoardCanvasProps) {
             "hover:border-white/25 hover:bg-white/5",
           )}
         >
-          Reset Board
+          {dictionary.board.resetBoard}
         </button>
       </div>
 

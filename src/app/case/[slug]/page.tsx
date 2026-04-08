@@ -9,6 +9,8 @@ import {
   getCaseEvents,
   getCaseUnlocks,
 } from "@/lib/case-data";
+import { getDictionary } from "@/lib/i18n";
+import { getCurrentLocale } from "@/lib/i18n-server";
 
 type CasePageProps = {
   params: Promise<{ slug: string }>;
@@ -16,15 +18,17 @@ type CasePageProps = {
 
 export default async function CaseDashboardPage({ params }: CasePageProps) {
   const { slug } = await params;
-  const caseRecord = getCaseBySlug(slug);
+  const locale = await getCurrentLocale();
+  const dictionary = getDictionary(locale);
+  const caseRecord = getCaseBySlug(slug, locale);
 
   if (!caseRecord) {
     notFound();
   }
 
-  const evidence = getCaseEvidence(slug);
-  const entities = getCaseEntities(slug);
-  const events = getCaseEvents(slug);
+  const evidence = getCaseEvidence(slug, locale);
+  const entities = getCaseEntities(slug, locale);
+  const events = getCaseEvents(slug, locale);
   const unlocks = getCaseUnlocks(slug);
   const recentEvidence = [...evidence]
     .sort((left, right) => right.discoveryPhase - left.discoveryPhase)
@@ -35,11 +39,12 @@ export default async function CaseDashboardPage({ params }: CasePageProps) {
       caseSlug={slug}
       title={caseRecord.title}
       tagline={caseRecord.summary}
+      locale={locale}
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <section className="rounded-[2rem] border border-white/10 bg-slate-950/35 p-6">
           <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
-            Investigation Brief
+            {dictionary.dashboard.brief}
           </p>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-200">
             {caseRecord.tagline}
@@ -48,30 +53,28 @@ export default async function CaseDashboardPage({ params }: CasePageProps) {
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             <article className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
               <p className="text-3xl text-white">{evidence.length}</p>
-              <p className="mt-1 text-sm text-slate-300">Evidence items</p>
+              <p className="mt-1 text-sm text-slate-300">{dictionary.dashboard.evidenceItems}</p>
             </article>
             <article className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
               <p className="text-3xl text-white">{entities.length}</p>
-              <p className="mt-1 text-sm text-slate-300">Entities in play</p>
+              <p className="mt-1 text-sm text-slate-300">{dictionary.dashboard.entitiesInPlay}</p>
             </article>
             <article className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
               <p className="text-3xl text-white">{events.length}</p>
-              <p className="mt-1 text-sm text-slate-300">Timeline events</p>
+              <p className="mt-1 text-sm text-slate-300">{dictionary.dashboard.timelineEvents}</p>
             </article>
           </div>
         </section>
 
         <aside className="rounded-[2rem] border border-amber-100/10 bg-amber-50/5 p-6">
           <p className="text-xs uppercase tracking-[0.32em] text-amber-100/70">
-            Primary Question
+            {dictionary.dashboard.primaryQuestion}
           </p>
           <p className="mt-4 text-lg leading-8 text-stone-200">
             {caseRecord.canonicalQuestion}
           </p>
           <p className="mt-6 text-sm leading-7 text-slate-300">
-            Unlock structure is already authored across {unlocks.length} rules.
-            The app can now render the case from seeded content instead of
-            hard-coded strings.
+            {dictionary.dashboard.unlockSummary(unlocks.length)}
           </p>
         </aside>
       </div>
@@ -81,15 +84,15 @@ export default async function CaseDashboardPage({ params }: CasePageProps) {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
-                Recent Leads
+                {dictionary.dashboard.recentLeads}
               </p>
-              <h2 className="mt-3 text-3xl text-white">Evidence by escalation</h2>
+              <h2 className="mt-3 text-3xl text-white">{dictionary.dashboard.evidenceByEscalation}</h2>
             </div>
             <Link
               href={`/case/${slug}/evidence`}
               className="rounded-full border border-white/10 px-4 py-2 text-sm text-slate-200 transition hover:border-white/30 hover:bg-white/5"
             >
-              Open vault
+              {dictionary.dashboard.openVault}
             </Link>
           </div>
 
@@ -108,14 +111,14 @@ export default async function CaseDashboardPage({ params }: CasePageProps) {
                     <h3 className="mt-2 text-2xl text-white">{item.title}</h3>
                   </div>
                   <span className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate-300">
-                    Phase {item.discoveryPhase}
+                    {dictionary.dashboard.phase} {item.discoveryPhase}
                   </span>
                 </div>
                 <p className="mt-3 text-sm leading-7 text-slate-300">
                   {item.summary}
                 </p>
                 <p className="mt-4 text-xs uppercase tracking-[0.18em] text-slate-400">
-                  {formatCaseDate(item.sortDate)}
+                  {formatCaseDate(item.sortDate, locale)}
                 </p>
               </Link>
             ))}
@@ -124,7 +127,7 @@ export default async function CaseDashboardPage({ params }: CasePageProps) {
 
         <section className="rounded-[2rem] border border-white/10 bg-slate-950/35 p-6">
           <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
-            Core Cast
+            {dictionary.dashboard.coreCast}
           </p>
           <div className="mt-5 space-y-3">
             {entities.slice(0, 6).map((entity) => (

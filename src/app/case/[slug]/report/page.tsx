@@ -1,30 +1,18 @@
 import { notFound } from "next/navigation";
 import { CaseShell } from "@/components/case-shell";
 import { getCaseBySlug } from "@/lib/case-data";
+import { getDictionary } from "@/lib/i18n";
+import { getCurrentLocale } from "@/lib/i18n-server";
 
 type ReportPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-const answerSets = {
-  cause: ["Accidental fall", "Premeditated murder", "Suicide", "Staged disappearance"],
-  responsibility: [
-    "Tomas alone",
-    "Blackwake alone",
-    "Shared cover-up",
-    "Unknown",
-  ],
-  motive: [
-    "Personal conflict",
-    "Safety scandal",
-    "Financial panic",
-    "Political corruption",
-  ],
-};
-
 export default async function ReportPage({ params }: ReportPageProps) {
   const { slug } = await params;
-  const caseRecord = getCaseBySlug(slug);
+  const locale = await getCurrentLocale();
+  const dictionary = getDictionary(locale);
+  const caseRecord = getCaseBySlug(slug, locale);
 
   if (!caseRecord) {
     notFound();
@@ -34,21 +22,22 @@ export default async function ReportPage({ params }: ReportPageProps) {
     <CaseShell
       caseSlug={slug}
       title={caseRecord.title}
-      tagline="Structured final report aligned with the authored scoring axes."
+      tagline={dictionary.report.tagline}
+      locale={locale}
     >
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <article className="rounded-[2rem] border border-white/10 bg-slate-950/35 p-6">
           <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
-            Final Report
+            {dictionary.report.heading}
           </p>
           <div className="mt-6 grid gap-5">
-            {Object.entries(answerSets).map(([key, answers]) => (
+            {Object.entries(dictionary.report.answers).map(([key, answers]) => (
               <div
                 key={key}
                 className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5"
               >
                 <p className="text-sm uppercase tracking-[0.24em] text-cyan-100/70">
-                  {key}
+                  {dictionary.report.axes[key as keyof typeof dictionary.report.axes]}
                 </p>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {answers.map((answer) => (
@@ -68,12 +57,12 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
         <aside className="rounded-[2rem] border border-amber-100/15 bg-amber-50/5 p-6">
           <p className="text-xs uppercase tracking-[0.32em] text-amber-100/70">
-            Best-Case Answer
+            {dictionary.report.bestCaseAnswer}
           </p>
           <div className="mt-4 space-y-4 text-sm leading-7 text-stone-200">
-            <p>Cause: accidental fall during a coercive confrontation.</p>
-            <p>Responsibility: shared cover-up by Pike, Tomas, and Elena.</p>
-            <p>Motive: concealment of the turbine safety scandal.</p>
+            <p>{dictionary.report.bestCase.cause}</p>
+            <p>{dictionary.report.bestCase.responsibility}</p>
+            <p>{dictionary.report.bestCase.motive}</p>
           </div>
         </aside>
       </section>

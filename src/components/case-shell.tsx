@@ -1,18 +1,14 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-
-const navItems = [
-  { href: "", label: "Dashboard" },
-  { href: "/evidence", label: "Evidence" },
-  { href: "/timeline", label: "Timeline" },
-  { href: "/board", label: "Board" },
-  { href: "/report", label: "Report" },
-];
+import { LanguageSwitcher } from "@/components/language-switcher";
+import type { AppLocale } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n";
 
 type CaseShellProps = {
   caseSlug: string;
   title: string;
   tagline: string;
+  locale: AppLocale;
   children: ReactNode;
 };
 
@@ -20,8 +16,18 @@ export function CaseShell({
   caseSlug,
   title,
   tagline,
+  locale,
   children,
 }: CaseShellProps) {
+  const dictionary = getDictionary(locale);
+  const navItems = [
+    { href: "", label: dictionary.nav.dashboard },
+    { href: "/evidence", label: dictionary.nav.evidence },
+    { href: "/timeline", label: dictionary.nav.timeline },
+    { href: "/board", label: dictionary.nav.board },
+    { href: "/report", label: dictionary.nav.report },
+  ];
+
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#09111a_0%,#0f1d2a_55%,#132330_100%)] text-stone-100">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-8 sm:px-10 lg:px-12">
@@ -40,7 +46,16 @@ export function CaseShell({
               </p>
             </div>
 
-            <nav className="flex flex-wrap gap-3">
+            <div className="flex flex-col items-start gap-4 lg:items-end">
+              <LanguageSwitcher
+                currentLocale={locale}
+                label={dictionary.languageLabel}
+                locales={[
+                  { value: "en", label: dictionary.languages.en },
+                  { value: "pt-PT", label: dictionary.languages["pt-PT"] },
+                ]}
+              />
+              <nav className="flex flex-wrap gap-3">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
@@ -50,7 +65,8 @@ export function CaseShell({
                   {item.label}
                 </Link>
               ))}
-            </nav>
+              </nav>
+            </div>
           </div>
         </header>
 

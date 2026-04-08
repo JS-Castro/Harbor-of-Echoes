@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseShell } from "@/components/case-shell";
 import { formatCaseDate, getCaseBySlug, getCaseEvidence } from "@/lib/case-data";
+import { getDictionary, getEvidenceTypeLabel } from "@/lib/i18n";
+import { getCurrentLocale } from "@/lib/i18n-server";
 
 type EvidencePageProps = {
   params: Promise<{ slug: string }>;
@@ -9,13 +11,15 @@ type EvidencePageProps = {
 
 export default async function EvidencePage({ params }: EvidencePageProps) {
   const { slug } = await params;
-  const caseRecord = getCaseBySlug(slug);
+  const locale = await getCurrentLocale();
+  const dictionary = getDictionary(locale);
+  const caseRecord = getCaseBySlug(slug, locale);
 
   if (!caseRecord) {
     notFound();
   }
 
-  const evidence = getCaseEvidence(slug).sort((left, right) =>
+  const evidence = getCaseEvidence(slug, locale).sort((left, right) =>
     left.code.localeCompare(right.code),
   );
 
@@ -23,18 +27,19 @@ export default async function EvidencePage({ params }: EvidencePageProps) {
     <CaseShell
       caseSlug={slug}
       title={caseRecord.title}
-      tagline="Searchable archive of the authored evidence set."
+      tagline={dictionary.evidenceList.tagline}
+      locale={locale}
     >
       <section className="rounded-[2rem] border border-white/10 bg-slate-950/35 p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
-              Evidence Vault
+              {dictionary.nav.evidence}
             </p>
-            <h2 className="mt-3 text-3xl text-white">Case archive</h2>
+            <h2 className="mt-3 text-3xl text-white">{dictionary.evidenceList.heading}</h2>
           </div>
           <p className="text-sm text-slate-300">
-            {evidence.length} authored items across four investigation phases
+            {dictionary.evidenceList.summary(evidence.length)}
           </p>
         </div>
 
@@ -49,7 +54,9 @@ export default async function EvidencePage({ params }: EvidencePageProps) {
                 <p className="text-xs uppercase tracking-[0.25em] text-cyan-100/60">
                   {item.code}
                 </p>
-                <p className="mt-2 text-sm text-slate-300">{item.type}</p>
+                <p className="mt-2 text-sm text-slate-300">
+                  {getEvidenceTypeLabel(locale, item.type)}
+                </p>
               </div>
               <div>
                 <h3 className="text-2xl text-white">{item.title}</h3>
@@ -59,10 +66,10 @@ export default async function EvidencePage({ params }: EvidencePageProps) {
               </div>
               <div className="text-left lg:text-right">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
-                  {formatCaseDate(item.sortDate)}
+                  {formatCaseDate(item.sortDate, locale)}
                 </p>
                 <p className="mt-2 text-sm text-slate-300">
-                  Confidence: {item.confidence}
+                  {dictionary.shared.confidence}: {item.confidence}
                 </p>
               </div>
             </Link>

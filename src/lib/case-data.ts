@@ -4,6 +4,11 @@ import evidenceFile from "../../data/cases/vale-disappearance/evidence.json";
 import eventsFile from "../../data/cases/vale-disappearance/events.json";
 import locationsFile from "../../data/cases/vale-disappearance/locations.json";
 import unlocksFile from "../../data/cases/vale-disappearance/unlocks.json";
+import {
+  getValeDisappearanceLocale,
+  type CaseLocaleCode,
+} from "@/lib/case-vale-disappearance.locales";
+import type { AppLocale } from "@/lib/i18n";
 
 export type CaseRecord = typeof caseFile;
 export type EntityRecord = (typeof entitiesFile)[number];
@@ -36,61 +41,92 @@ export type BoardSeed = {
 };
 
 const caseRecord = caseFile;
-const entities = entitiesFile;
-const evidence = evidenceFile;
-const events = eventsFile;
-const locations = locationsFile;
 const unlocks = unlocksFile;
 
-export function getCaseBySlug(slug: string) {
-  return caseRecord.slug === slug ? caseRecord : null;
+function getLocalizedCaseContent(locale: AppLocale | CaseLocaleCode = "en") {
+  return getValeDisappearanceLocale(locale);
 }
 
-export function getCaseEntities(slug: string) {
-  return getCaseBySlug(slug) ? entities : [];
+export function getCaseBySlug(slug: string, locale: AppLocale | CaseLocaleCode = "en") {
+  return caseRecord.slug === slug ? getLocalizedCaseContent(locale).case : null;
 }
 
-export function getCaseEvidence(slug: string) {
-  return getCaseBySlug(slug) ? evidence : [];
+export function getCaseEntities(slug: string, locale: AppLocale | CaseLocaleCode = "en") {
+  return getCaseBySlug(slug, locale)
+    ? Object.values(getLocalizedCaseContent(locale).entities)
+    : [];
 }
 
-export function getCaseEvents(slug: string) {
-  return getCaseBySlug(slug) ? events : [];
+export function getCaseEvidence(slug: string, locale: AppLocale | CaseLocaleCode = "en") {
+  return getCaseBySlug(slug, locale)
+    ? Object.values(getLocalizedCaseContent(locale).evidence)
+    : [];
 }
 
-export function getCaseLocations(slug: string) {
-  return getCaseBySlug(slug) ? locations : [];
+export function getCaseEvents(slug: string, locale: AppLocale | CaseLocaleCode = "en") {
+  return getCaseBySlug(slug, locale)
+    ? Object.values(getLocalizedCaseContent(locale).events)
+    : [];
+}
+
+export function getCaseLocations(slug: string, locale: AppLocale | CaseLocaleCode = "en") {
+  return getCaseBySlug(slug, locale)
+    ? Object.values(getLocalizedCaseContent(locale).locations)
+    : [];
 }
 
 export function getCaseUnlocks(slug: string) {
   return getCaseBySlug(slug) ? unlocks : [];
 }
 
-export function getEntityBySlug(caseSlug: string, entitySlug: string) {
-  return getCaseEntities(caseSlug).find((item) => item.slug === entitySlug) ?? null;
+export function getEntityBySlug(
+  caseSlug: string,
+  entitySlug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+) {
+  return getCaseEntities(caseSlug, locale).find((item) => item.slug === entitySlug) ?? null;
 }
 
-export function getEvidenceBySlug(caseSlug: string, evidenceSlug: string) {
-  return getCaseEvidence(caseSlug).find((item) => item.slug === evidenceSlug) ?? null;
+export function getEvidenceBySlug(
+  caseSlug: string,
+  evidenceSlug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+) {
+  return getCaseEvidence(caseSlug, locale).find((item) => item.slug === evidenceSlug) ?? null;
 }
 
-export function getLocationBySlug(caseSlug: string, locationSlug: string) {
-  return getCaseLocations(caseSlug).find((item) => item.slug === locationSlug) ?? null;
+export function getLocationBySlug(
+  caseSlug: string,
+  locationSlug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+) {
+  return getCaseLocations(caseSlug, locale).find((item) => item.slug === locationSlug) ?? null;
 }
 
-export function getRelatedEvidence(caseSlug: string, codes: string[]) {
+export function getRelatedEvidence(
+  caseSlug: string,
+  codes: string[],
+  locale: AppLocale | CaseLocaleCode = "en",
+) {
   const evidenceMap = new Set(codes);
-  return getCaseEvidence(caseSlug).filter((item) => evidenceMap.has(item.code));
+  return getCaseEvidence(caseSlug, locale).filter((item) => evidenceMap.has(item.code));
 }
 
-export function getRelatedEntities(caseSlug: string, slugs: string[]) {
+export function getRelatedEntities(
+  caseSlug: string,
+  slugs: string[],
+  locale: AppLocale | CaseLocaleCode = "en",
+) {
   const entityMap = new Set(slugs);
-  return getCaseEntities(caseSlug).filter((item) => entityMap.has(item.slug));
+  return getCaseEntities(caseSlug, locale).filter((item) => entityMap.has(item.slug));
 }
 
-export function formatCaseDate(value: string | null | undefined) {
+export function formatCaseDate(
+  value: string | null | undefined,
+  locale: AppLocale | CaseLocaleCode = "en",
+) {
   if (!value) {
-    return "Unknown";
+    return locale === "pt-PT" ? "Desconhecido" : "Unknown";
   }
 
   const date = new Date(value);
@@ -98,16 +134,16 @@ export function formatCaseDate(value: string | null | undefined) {
     return value;
   }
 
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: value.includes("T") ? "short" : undefined,
     timeZone: "UTC",
   }).format(date);
 }
 
-export function getBoardSeed(caseSlug: string) {
-  const caseEntities = getCaseEntities(caseSlug).slice(0, 6);
-  const caseEvidence = getCaseEvidence(caseSlug).slice(0, 6);
+export function getBoardSeed(caseSlug: string, locale: AppLocale | CaseLocaleCode = "en") {
+  const caseEntities = getCaseEntities(caseSlug, locale).slice(0, 6);
+  const caseEvidence = getCaseEvidence(caseSlug, locale).slice(0, 6);
 
   const entityNodes = caseEntities.map((entity, index) => ({
     id: entity.slug,

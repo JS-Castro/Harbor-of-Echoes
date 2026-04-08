@@ -16,6 +16,7 @@ Implemented:
 - Prisma seed workflow from local JSON case files
 - first interactive investigation board using React Flow
 - local board session persistence with Zustand
+- initial free-use placeholder image pack integrated into the homepage
 
 ## Key Documents
 
@@ -26,6 +27,7 @@ Implemented:
 - `docs/architecture.md`
 - `docs/art-direction.md`
 - `docs/image-prompts.md`
+- `docs/asset-attribution.md`
 
 ## Implemented App Areas
 
@@ -44,6 +46,14 @@ Implemented:
 - Prisma schema exists in `prisma/schema.prisma`
 - Prisma seed exists in `prisma/seed.ts`
 - board layout persists locally in browser storage by case slug
+
+## Current Placeholder Assets
+
+- `public/images/hero-harbor-night.jpg`
+- `public/images/mara-dossier-portrait.jpg`
+- `public/images/evidence-turbine-interior.jpg`
+
+Source tracking lives in `docs/asset-attribution.md`.
 
 ## Validation Status
 
@@ -64,25 +74,23 @@ Known environment constraint:
 
 ## Current Uncommitted Work
 
-- `src/components/board-canvas.tsx`
-- `src/stores/board-store.ts`
-- `src/lib/case-data.ts`
-- `src/app/case/[slug]/board/page.tsx`
-- `tsconfig.json`
-- `docs/art-direction.md`
-- `docs/image-prompts.md`
+- `src/app/page.tsx`
+- `docs/asset-attribution.md`
 - `docs/progress.md`
+- `public/images/hero-harbor-night.jpg`
+- `public/images/mara-dossier-portrait.jpg`
+- `public/images/evidence-turbine-interior.jpg`
 
 ## Next Steps
 
 ### Immediate
 
-- commit the persisted board session work
-- push latest local changes
+- review placeholder image integration
+- commit and push asset placeholders
 
 ### After That
 
-- generate the first image asset pack once `OPENAI_API_KEY` is available
+- replace temporary stock placeholders with project-owned art when available
 - connect authored JSON content to Prisma-backed reads instead of direct file access
 - add manual note creation and custom links on the board
 
@@ -90,4 +98,4 @@ Known environment constraint:
 
 If a future session needs to resume quickly:
 
-`Continue Harbor of Echoes from docs/progress.md, commit any pending persisted-board work if valid, then proceed to image asset generation once OPENAI_API_KEY is available.`
+`Continue Harbor of Echoes from docs/progress.md, review any pending stock placeholder integration, then keep moving evidence/entity visuals forward before replacing placeholders with project-owned art.`

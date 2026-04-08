@@ -6,6 +6,8 @@ import {
   getCaseEvents,
   getLocationBySlug,
 } from "@/lib/case-data";
+import { getCertaintyLabel, getDictionary } from "@/lib/i18n";
+import { getCurrentLocale } from "@/lib/i18n-server";
 
 type TimelinePageProps = {
   params: Promise<{ slug: string }>;
@@ -13,13 +15,15 @@ type TimelinePageProps = {
 
 export default async function TimelinePage({ params }: TimelinePageProps) {
   const { slug } = await params;
-  const caseRecord = getCaseBySlug(slug);
+  const locale = await getCurrentLocale();
+  const dictionary = getDictionary(locale);
+  const caseRecord = getCaseBySlug(slug, locale);
 
   if (!caseRecord) {
     notFound();
   }
 
-  const events = getCaseEvents(slug).sort((left, right) =>
+  const events = getCaseEvents(slug, locale).sort((left, right) =>
     left.eventTime.localeCompare(right.eventTime),
   );
 
@@ -27,15 +31,16 @@ export default async function TimelinePage({ params }: TimelinePageProps) {
     <CaseShell
       caseSlug={slug}
       title={caseRecord.title}
-      tagline="Chronological reconstruction of the investigation and disappearance night."
+      tagline={dictionary.timeline.tagline}
+      locale={locale}
     >
       <section className="rounded-[2rem] border border-white/10 bg-slate-950/35 p-6">
         <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
-          Timeline
+          {dictionary.timeline.heading}
         </p>
         <div className="mt-8 space-y-5">
           {events.map((event) => {
-            const location = getLocationBySlug(slug, event.locationSlug);
+            const location = getLocationBySlug(slug, event.locationSlug, locale);
 
             return (
               <article
@@ -44,10 +49,10 @@ export default async function TimelinePage({ params }: TimelinePageProps) {
               >
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-cyan-100/60">
-                    {formatCaseDate(event.eventTime)}
+                    {formatCaseDate(event.eventTime, locale)}
                   </p>
                   <p className="mt-2 text-sm text-slate-300">
-                    Certainty: {event.certainty}
+                    {dictionary.timeline.certainty}: {getCertaintyLabel(locale, event.certainty)}
                   </p>
                 </div>
                 <div>
@@ -57,7 +62,7 @@ export default async function TimelinePage({ params }: TimelinePageProps) {
                   </p>
                   {location ? (
                     <p className="mt-4 text-xs uppercase tracking-[0.18em] text-slate-400">
-                      Location: {location.name}
+                      {dictionary.shared.location}: {location.name}
                     </p>
                   ) : null}
                 </div>
