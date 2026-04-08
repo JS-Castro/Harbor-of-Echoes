@@ -11,6 +11,7 @@ export type EvidenceRecord = (typeof evidenceFile)[number];
 export type EventRecord = (typeof eventsFile)[number];
 export type LocationRecord = (typeof locationsFile)[number];
 export type UnlockRecord = (typeof unlocksFile)[number];
+export type BoardSeed = ReturnType<typeof getBoardSeed>;
 
 const caseRecord = caseFile;
 const entities = entitiesFile;
@@ -80,4 +81,62 @@ export function formatCaseDate(value: string | null | undefined) {
     timeStyle: value.includes("T") ? "short" : undefined,
     timeZone: "UTC",
   }).format(date);
+}
+
+export function getBoardSeed(caseSlug: string) {
+  const caseEntities = getCaseEntities(caseSlug).slice(0, 6);
+  const caseEvidence = getCaseEvidence(caseSlug).slice(0, 6);
+
+  const entityNodes = caseEntities.map((entity, index) => ({
+    id: entity.slug,
+    type: "entity",
+    position: {
+      x: 48 + (index % 2) * 280,
+      y: 48 + Math.floor(index / 2) * 132,
+    },
+    data: {
+      label: entity.name,
+      meta: entity.role,
+      tone: "entity" as const,
+    },
+  }));
+
+  const evidenceNodes = caseEvidence.map((item, index) => ({
+    id: item.code,
+    type: "evidence",
+    position: {
+      x: 660 + (index % 2) * 280,
+      y: 48 + Math.floor(index / 2) * 132,
+    },
+    data: {
+      label: item.title,
+      meta: item.code,
+      tone: "evidence" as const,
+    },
+  }));
+
+  const evidenceEdges = caseEvidence.flatMap((item) =>
+    item.relatedEntitySlugs
+      .slice(0, 2)
+      .map((entitySlug, index) => {
+        const entity = caseEntities.find((candidate) => candidate.slug === entitySlug);
+
+        if (!entity) {
+          return null;
+        }
+
+        return {
+          id: `${entity.slug}-${item.code}-${index}`,
+          source: entity.slug,
+          target: item.code,
+          label: index === 0 ? "linked" : undefined,
+        };
+      })
+      .filter((edge): edge is NonNullable<typeof edge> => edge !== null),
+  );
+
+  return {
+    nodes: [...entityNodes, ...evidenceNodes],
+    edges: evidenceEdges,
+  };
 }

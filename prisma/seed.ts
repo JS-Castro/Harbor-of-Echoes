@@ -55,6 +55,14 @@ const unlockRuleTypeMap = {
   requires_case_progress: "INSPECT_TIMELINE_EVENT",
 } as const;
 
+function mapEnumValue<T extends Record<string, string>>(map: T, value: string): T[keyof T] {
+  if (!(value in map)) {
+    throw new Error(`Unknown enum value: ${value}`);
+  }
+
+  return map[value as keyof T];
+}
+
 function toDate(value: string | null | undefined) {
   return value ? new Date(value) : null;
 }
@@ -85,7 +93,7 @@ async function main() {
       title: caseFile.title,
       tagline: caseFile.tagline,
       summary: caseFile.summary,
-      status: caseStatusMap[caseFile.status],
+      status: mapEnumValue(caseStatusMap, caseFile.status),
     },
   });
 
@@ -107,7 +115,7 @@ async function main() {
       caseId: createdCase.id,
       slug: entity.slug,
       name: entity.name,
-      type: entityTypeMap[entity.type],
+      type: mapEnumValue(entityTypeMap, entity.type),
       summary: entity.summary,
       description: entity.description,
       publicNotes: entity.publicNotes,
@@ -122,7 +130,7 @@ async function main() {
       slug: item.slug,
       code: item.code,
       title: item.title,
-      type: evidenceTypeMap[item.type],
+      type: mapEnumValue(evidenceTypeMap, item.type),
       sourceLabel: item.sourceLabel,
       summary: item.summary,
       content: {
@@ -130,7 +138,7 @@ async function main() {
         relatedEntitySlugs: item.relatedEntitySlugs,
         relatedLocationSlugs: item.relatedLocationSlugs,
       },
-      confidence: confidenceMap[item.confidence],
+      confidence: mapEnumValue(confidenceMap, item.confidence),
       discoveryPhase: item.discoveryPhase,
       sortDate: toDate(item.sortDate),
     })),
@@ -149,8 +157,8 @@ async function main() {
       title: event.title,
       description: event.description,
       eventTime: toDate(event.eventTime),
-      timePrecision: timePrecisionMap[event.timePrecision],
-      certainty: certaintyMap[event.certainty],
+      timePrecision: mapEnumValue(timePrecisionMap, event.timePrecision),
+      certainty: mapEnumValue(certaintyMap, event.certainty),
     })),
   });
 
@@ -181,7 +189,7 @@ async function main() {
       caseId: createdCase.id,
       targetType: "CASE",
       targetRefId: rule.targetCode,
-      ruleType: unlockRuleTypeMap[rule.ruleType],
+      ruleType: mapEnumValue(unlockRuleTypeMap, rule.ruleType),
       ruleConfig: {
         targetType: rule.targetType,
         notes: rule.notes,

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
+import { BoardCanvas } from "@/components/board-canvas";
 import { CaseShell } from "@/components/case-shell";
-import { getCaseBySlug, getCaseEntities, getCaseEvidence } from "@/lib/case-data";
+import { getBoardSeed, getCaseBySlug } from "@/lib/case-data";
 
 type BoardPageProps = {
   params: Promise<{ slug: string }>;
@@ -14,52 +15,31 @@ export default async function BoardPage({ params }: BoardPageProps) {
     notFound();
   }
 
-  const evidence = getCaseEvidence(slug).slice(0, 6);
-  const entities = getCaseEntities(slug).slice(0, 6);
+  const board = getBoardSeed(slug);
 
   return (
     <CaseShell
       caseSlug={slug}
       title={caseRecord.title}
-      tagline="Board preview for clustering leads before the interactive graph lands."
+      tagline="Interactive investigation board seeded from the case graph."
     >
-      <section className="grid gap-6 lg:grid-cols-2">
-        <article className="rounded-[2rem] border border-white/10 bg-slate-950/35 p-6">
-          <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
-            Suggested Evidence Nodes
-          </p>
-          <div className="mt-5 grid gap-4">
-            {evidence.map((item) => (
-              <div
-                key={item.code}
-                className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4"
-              >
-                <p className="text-xs uppercase tracking-[0.18em] text-cyan-100/60">
-                  {item.code}
-                </p>
-                <p className="mt-2 text-lg text-white">{item.title}</p>
-                <p className="mt-2 text-sm leading-7 text-slate-300">
-                  {item.summary}
-                </p>
-              </div>
-            ))}
-          </div>
-        </article>
-
+      <section className="grid gap-6">
         <article className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
-            Suggested Entity Nodes
-          </p>
-          <div className="mt-5 grid gap-4">
-            {entities.map((entity) => (
-              <div
-                key={entity.slug}
-                className="rounded-[1.5rem] border border-white/10 bg-slate-950/35 p-4"
-              >
-                <p className="text-lg text-white">{entity.name}</p>
-                <p className="mt-2 text-sm text-slate-300">{entity.role}</p>
-              </div>
-            ))}
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.32em] text-cyan-100/70">
+                Investigation Board
+              </p>
+              <h2 className="mt-3 text-3xl text-white">Relationship surface</h2>
+            </div>
+            <p className="max-w-xl text-sm leading-7 text-slate-300">
+              This first pass maps the authored case graph into a navigable board.
+              The next layer is persisted notes, manual links, and drag state per
+              investigation session.
+            </p>
+          </div>
+          <div className="mt-6">
+            <BoardCanvas nodes={board.nodes} edges={board.edges} />
           </div>
         </article>
       </section>
