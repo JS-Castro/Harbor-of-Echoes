@@ -1,37 +1,24 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { clsx } from "clsx";
 import ReactFlow, {
   Background,
   Controls,
   MarkerType,
+  applyNodeChanges,
   type Edge,
   type Node,
   type NodeProps,
+  type NodeChange,
 } from "reactflow";
 import "reactflow/dist/style.css";
-
-type SeedNode = {
-  id: string;
-  type: string;
-  position: { x: number; y: number };
-  data: {
-    label: string;
-    meta: string;
-    tone: "entity" | "evidence";
-  };
-};
-
-type SeedEdge = {
-  id: string;
-  source: string;
-  target: string;
-  label?: string;
-};
+import type { BoardSeed } from "@/lib/case-data";
+import { useBoardStore } from "@/stores/board-store";
 
 type BoardCanvasProps = {
-  nodes: SeedNode[];
-  edges: SeedEdge[];
+  caseSlug: string;
+  seed: BoardSeed;
 };
 
 function InvestigationNode({ data }: NodeProps<Node["data"]>) {
@@ -57,19 +44,30 @@ const nodeTypes = {
   evidence: InvestigationNode,
 };
 
-export function BoardCanvas({ nodes, edges }: BoardCanvasProps) {
+export function BoardCanvas({ caseSlug, seed }: BoardCanvasProps) {
+  const storedSession = useBoardStore((state) => state.sessions[caseSlug]);
+  const hydrateCase = useBoardStore((state) => state.hydrateCase);
+  const setNodes = useBoardStore((state) => state.setNodes);
+  const resetCase = useBoardStore((state) => state.resetCase);
+
+  useEffect(() => {
+    hydrateCase(caseSlug, seed);
+  }, [caseSlug, hydrateCase, seed]);
+
+  const activeSession = storedSession ?? seed;
+
   const flowNodes = useMemo<Node[]>(
     () =>
-      nodes.map((node) => ({
+      activeSession.nodes.map((node) => ({
         ...node,
-        draggable: false,
+        draggable: true,
       })),
-    [nodes],
+    [activeSession.nodes],
   );
 
   const flowEdges = useMemo<Edge[]>(
     () =>
-      edges.map((edge) => ({
+      activeSession.edges.map((edge) => ({
         ...edge,
         type: "smoothstep",
         animated: true,
@@ -90,27 +88,75 @@ export function BoardCanvas({ nodes, edges }: BoardCanvasProps) {
           letterSpacing: "0.12em",
         },
       })),
-    [edges],
+    [activeSession.edges],
   );
 
+  function handleNodesChange(changes: NodeChange[]) {
+    const nextNodes: BoardSeed["nodes"] = applyNodeChanges(changes, flowNodes).map(
+      (node) => ({
+        id: node.id,
+        type: node.type ?? "entity",
+        position: node.position,
+        data: {
+          label: String(node.data?.label ?? ""),
+          meta: String(node.data?.meta ?? ""),
+          tone:
+            (node.data?.tone as "entity" | "evidence" | undefined) === "evidence"
+              ? "evidence"
+              : "entity",
+        },
+      }),
+    );
+
+    setNodes(caseSlug, nextNodes);
+  }
+
+  function handleReset() {
+    resetCase(caseSlug, seed);
+  }
+
   return (
-    <div className="h-[44rem] overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top,rgba(173,202,219,0.08),transparent_30%),linear-gradient(180deg,rgba(4,10,15,0.92),rgba(11,21,30,0.98))]">
-      <ReactFlow
-        fitView
-        nodes={flowNodes}
-        edges={flowEdges}
-        nodeTypes={nodeTypes}
-        minZoom={0.5}
-        maxZoom={1.2}
-        fitViewOptions={{ padding: 0.18 }}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background color="#89a5b7" gap={32} size={1} />
-        <Controls
-          showInteractive={false}
-          className="[&>button]:border-white/10 [&>button]:bg-slate-900 [&>button]:text-stone-100"
-        />
-      </ReactFlow>
+    <div className="rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top,rgba(173,202,219,0.08),transparent_30%),linear-gradient(180deg,rgba(4,10,15,0.92),rgba(11,21,30,0.98))]">
+      <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
+            Session State
+          </p>
+          <p className="mt-1 text-sm text-slate-300">
+            Drag nodes to reorganize the case board. Layout is stored locally.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleReset}
+          className={clsx(
+            "rounded-full border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.18em] text-stone-100 transition",
+            "hover:border-white/25 hover:bg-white/5",
+          )}
+        >
+          Reset Board
+        </button>
+      </div>
+
+      <div className="h-[40rem] overflow-hidden">
+        <ReactFlow
+          fitView
+          nodes={flowNodes}
+          edges={flowEdges}
+          nodeTypes={nodeTypes}
+          minZoom={0.5}
+          maxZoom={1.2}
+          fitViewOptions={{ padding: 0.18 }}
+          proOptions={{ hideAttribution: true }}
+          onNodesChange={handleNodesChange}
+        >
+          <Background color="#89a5b7" gap={32} size={1} />
+          <Controls
+            showInteractive={false}
+            className="[&>button]:border-white/10 [&>button]:bg-slate-900 [&>button]:text-stone-100"
+          />
+        </ReactFlow>
+      </div>
     </div>
   );
 }

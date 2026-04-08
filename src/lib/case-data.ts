@@ -11,7 +11,29 @@ export type EvidenceRecord = (typeof evidenceFile)[number];
 export type EventRecord = (typeof eventsFile)[number];
 export type LocationRecord = (typeof locationsFile)[number];
 export type UnlockRecord = (typeof unlocksFile)[number];
-export type BoardSeed = ReturnType<typeof getBoardSeed>;
+
+export type BoardSeedNode = {
+  id: string;
+  type: string;
+  position: { x: number; y: number };
+  data: {
+    label: string;
+    meta: string;
+    tone: "entity" | "evidence";
+  };
+};
+
+export type BoardSeedEdge = {
+  id: string;
+  source: string;
+  target: string;
+  label?: string;
+};
+
+export type BoardSeed = {
+  nodes: BoardSeedNode[];
+  edges: BoardSeedEdge[];
+};
 
 const caseRecord = caseFile;
 const entities = entitiesFile;
@@ -138,5 +160,5 @@ export function getBoardSeed(caseSlug: string) {
   return {
     nodes: [...entityNodes, ...evidenceNodes],
     edges: evidenceEdges,
-  };
+  } satisfies BoardSeed;
 }

@@ -39,7 +39,7 @@ export default async function BoardPage({ params }: BoardPageProps) {
             </p>
           </div>
           <div className="mt-6">
-            <BoardCanvas nodes={board.nodes} edges={board.edges} />
+            <BoardCanvas caseSlug={slug} seed={board} />
           </div>
         </article>
       </section>
