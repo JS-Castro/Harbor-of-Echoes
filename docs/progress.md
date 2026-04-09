@@ -32,6 +32,8 @@ Implemented:
 - case progress is now persisted server-side through Prisma-backed `SessionEvidence` and `ReportSubmission` records keyed by an anonymous session cookie, so reviewed evidence and final case completion no longer depend on `localStorage`
 - report draft selections are now restored from the persisted session path as well, using a session-scoped draft record so unfinished report work survives reloads
 - board state is now restored and saved through the same persisted anonymous session path, so node movement, manual notes, and manual links no longer rely on local-only storage
+- report answer buttons now avoid pre-hydration race overrides and correctly expose selected state through `aria-pressed`, improving accessibility and browser automation reliability
+- board controls now guard against session-load races and fall back to an interactive state even when snapshot loading fails, preventing the board from getting stuck disabled
 - investigation board now supports manual note nodes with local persistence
 - board UX now includes manual note removal and avoids duplicating the same source-target connection
 - board rendering is currently using a custom interactive overlay above a hidden React Flow layer because the authored React Flow canvas became visually unreliable in-browser
@@ -111,6 +113,7 @@ Known environment constraint:
 - the game now has a lightweight end-to-end loop: the player can explore the case, build a final theory in the report, submit it, and receive a simple verdict state
 - current report scoring is intentionally lightweight: it compares the final theory against the authored best-case answer and now surfaces supporting/conflicting evidence links, but it still does not produce a richer narrative ending or a fully systemic unlock engine across the whole app
 - reviewed evidence, draft report selections, final report submission, and board state now persist through the server-side session model, and the main remaining persistence gap is anonymous-session productization rather than raw storage coverage
+- dashboard report-progress remains client-fetched for now because rendering session state directly in the dashboard server route triggered Prisma runtime constraints in this environment; revisit once the Prisma runtime adapter setup is finalized
 - current debugging/tooling investigation is narrowed: Playwright automation matches real browser behavior against `next start`, so remaining work is to codify that workflow rather than debug the report feature itself
 - keep `docs/progress.md` updated during active work so future AI sessions can resume from the latest real state
 

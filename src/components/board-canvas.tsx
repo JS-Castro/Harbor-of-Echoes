@@ -158,17 +158,25 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
   useEffect(() => {
     let cancelled = false;
 
-    void loadBoardSnapshot(caseSlug).then((snapshot) => {
-      if (cancelled) {
-        return;
-      }
+    void loadBoardSnapshot(caseSlug)
+      .then((snapshot) => {
+        if (cancelled) {
+          return;
+        }
 
-      if (snapshot) {
-        setSnapshot(caseSlug, snapshot);
-      }
+        if (snapshot) {
+          setSnapshot(caseSlug, snapshot);
+        }
 
-      setHasLoadedSnapshot(true);
-    });
+        setHasLoadedSnapshot(true);
+      })
+      .catch(() => {
+        if (cancelled) {
+          return;
+        }
+
+        setHasLoadedSnapshot(true);
+      });
 
     return () => {
       cancelled = true;
@@ -507,6 +515,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
   }
 
   function handleAddNote() {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     const nextIndex = manualNotesCount + 1;
     const canvasBounds = canvasRef.current?.getBoundingClientRect();
     const viewportCenter = canvasBounds
@@ -543,6 +555,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
   }
 
   function handleReset() {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     resetCase(caseSlug, seed);
     setPendingNoteLabel(dictionary.board.newNoteTitle);
     setDraggingNodeId(null);
@@ -562,6 +578,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
     nodeId: string,
     position: { x: number; y: number },
   ) {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     event.stopPropagation();
 
     if (!canvasRef.current) {
@@ -582,6 +602,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
   }
 
   function handlePanStart(event: React.PointerEvent<HTMLDivElement>) {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     if (event.target !== event.currentTarget) {
       return;
     }
@@ -601,6 +625,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
     position: { x: number; y: number },
     side: "source" | "target",
   ) {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     event.stopPropagation();
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
@@ -617,6 +645,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
     targetNodeId: string,
     targetSide: "source" | "target",
   ) {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     event.stopPropagation();
 
     if (!linkDragSource) {
@@ -644,6 +676,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
     targetNodeId: string,
     targetSide: "source" | "target",
   ) {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     if (!linkDragSource || event.buttons !== 1) {
       return;
     }
@@ -670,6 +706,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
   }
 
   function handleRemoveNote(event: React.MouseEvent<HTMLButtonElement>, nodeId: string) {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     event.stopPropagation();
     removeNode(caseSlug, nodeId);
   }
@@ -682,6 +722,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
   }
 
   function handleWheel(event: React.WheelEvent<HTMLDivElement>) {
+    if (!hasLoadedSnapshot) {
+      return;
+    }
+
     event.preventDefault();
 
     if (!canvasRef.current) {
@@ -720,6 +764,11 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
           <p className="mt-1 text-sm text-slate-300">
             {dictionary.board.sessionHelp}
           </p>
+          {!hasLoadedSnapshot ? (
+            <p className="mt-2 text-xs uppercase tracking-[0.18em] text-amber-100/80">
+              Syncing investigation session...
+            </p>
+          ) : null}
           <p className="mt-2 text-xs text-cyan-100/75">
             {dictionary.board.linkInstruction}
           </p>
@@ -734,15 +783,17 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
               value={pendingNoteLabel}
               onChange={(event) => setPendingNoteLabel(event.target.value)}
               placeholder={dictionary.board.newNoteTitle}
+              disabled={!hasLoadedSnapshot}
               className="min-w-52 rounded-full border border-emerald-100/15 bg-slate-950/70 px-4 py-2 text-xs normal-case tracking-normal text-stone-100 outline-none placeholder:text-slate-500"
             />
           </label>
           <button
             type="button"
             onClick={handleAddNote}
+            disabled={!hasLoadedSnapshot}
             className={clsx(
               "rounded-full border border-emerald-100/15 px-4 py-2 text-xs uppercase tracking-[0.18em] text-emerald-50 transition",
-              "hover:border-emerald-100/35 hover:bg-emerald-100/10",
+              "hover:border-emerald-100/35 hover:bg-emerald-100/10 disabled:cursor-not-allowed disabled:opacity-60",
             )}
           >
             {dictionary.board.addNote}
@@ -760,9 +811,10 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
           <button
             type="button"
             onClick={handleReset}
+            disabled={!hasLoadedSnapshot}
             className={clsx(
               "rounded-full border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.18em] text-stone-100 transition",
-              "hover:border-white/25 hover:bg-white/5",
+              "hover:border-white/25 hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-60",
             )}
           >
             {dictionary.board.resetBoard}
@@ -774,6 +826,7 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
         ref={canvasRef}
         className={clsx(
           "relative h-[40rem] overflow-hidden",
+          !hasLoadedSnapshot ? "opacity-85" : "",
           isPanning ? "cursor-grabbing" : "cursor-grab",
         )}
         onPointerDown={handlePanStart}

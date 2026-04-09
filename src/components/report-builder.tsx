@@ -37,19 +37,29 @@ export function ReportBuilder({
   const [selections, setSelections] = useState<ReportSelections>({});
   const [submission, setSubmission] = useState<ReportSubmission | null>(null);
   const [reviewedEvidenceCodes, setReviewedEvidenceCodes] = useState<string[]>([]);
+  const [hasLoadedProgress, setHasLoadedProgress] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    void loadCaseProgress(caseSlug).then((progress) => {
-      if (cancelled) {
-        return;
-      }
+    void loadCaseProgress(caseSlug)
+      .then((progress) => {
+        if (cancelled) {
+          return;
+        }
 
-      setSelections(progress.reportSelections);
-      setSubmission(progress.reportSubmission);
-      setReviewedEvidenceCodes(progress.reviewedEvidenceCodes);
-    });
+        setSelections(progress.reportSelections);
+        setSubmission(progress.reportSubmission);
+        setReviewedEvidenceCodes(progress.reviewedEvidenceCodes);
+        setHasLoadedProgress(true);
+      })
+      .catch(() => {
+        if (cancelled) {
+          return;
+        }
+
+        setHasLoadedProgress(true);
+      });
 
     return () => {
       cancelled = true;
@@ -73,7 +83,8 @@ export function ReportBuilder({
     (code) => !reviewedEvidenceSet.has(code),
   );
   const hasUnlockedFinalReport = missingRequiredEvidence.length === 0;
-  const isReadyToSubmit = completedAxes === totalReportAxes && hasUnlockedFinalReport;
+  const isReadyToSubmit =
+    hasLoadedProgress && completedAxes === totalReportAxes && hasUnlockedFinalReport;
 
   const completionLabel = useMemo(
     () => dictionary.report.completion(completedAxes, totalReportAxes),
@@ -149,6 +160,10 @@ export function ReportBuilder({
   }, [dictionary.report, evidenceByCode, submission]);
 
   function handleSelect(axis: ReportAxis, answer: string) {
+    if (!hasLoadedProgress) {
+      return;
+    }
+
     const nextSelections = {
       ...selections,
       [axis]: selections[axis] === answer ? undefined : answer,
@@ -160,13 +175,17 @@ export function ReportBuilder({
   }
 
   function handleReset() {
+    if (!hasLoadedProgress) {
+      return;
+    }
+
     setSelections({});
     setSubmission(null);
     void resetReportState(caseSlug);
   }
 
   async function handleSubmit() {
-    if (!isReadyToSubmit) {
+    if (!hasLoadedProgress || !isReadyToSubmit) {
       return;
     }
 
@@ -198,6 +217,7 @@ export function ReportBuilder({
                 type="button"
                 onClick={handleSubmit}
                 disabled={!isReadyToSubmit}
+                aria-disabled={!isReadyToSubmit}
                 className={clsx(
                   "rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em] transition",
                   isReadyToSubmit
@@ -210,6 +230,7 @@ export function ReportBuilder({
               <button
                 type="button"
                 onClick={handleReset}
+                disabled={!hasLoadedProgress}
                 className="rounded-full border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.18em] text-slate-200 transition hover:border-white/25 hover:bg-white/5"
               >
                 {dictionary.report.reset}
@@ -257,11 +278,13 @@ export function ReportBuilder({
                       type="button"
                       onClick={() => handleSelect(axis, answer)}
                       aria-pressed={isSelected}
+                      disabled={!hasLoadedProgress}
                       className={clsx(
                         "rounded-[1rem] border px-4 py-3 text-left text-sm transition",
                         isSelected
                           ? "border-cyan-100/35 bg-cyan-100/10 text-white"
                           : "border-white/10 text-slate-200 hover:border-white/25 hover:bg-white/5",
+                        !hasLoadedProgress && "opacity-60",
                       )}
                     >
                       {answer}

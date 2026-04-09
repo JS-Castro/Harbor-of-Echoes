@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto";
 import { cookies } from "next/headers";
-import { db } from "@/lib/db";
 import {
   parseReportSelections,
   reportDraftHypothesisTitle,
@@ -10,7 +9,12 @@ import {
 
 const caseSessionCookieName = "hoe-case-session";
 
-type PersistedCaseProgress = {
+async function getDb() {
+  const { db } = await import("@/lib/db");
+  return db;
+}
+
+export type PersistedCaseProgress = {
   reviewedEvidenceCodes: string[];
   reportSelections: ReportSelections;
   reportSubmission: ReportSubmission | null;
@@ -85,6 +89,7 @@ export async function getPersistedCaseProgress(caseSlug: string): Promise<Persis
   }
 
   try {
+    const db = await getDb();
     const session = await db.session.findFirst({
       where: {
         playerLabel: sessionKey,
@@ -127,6 +132,7 @@ export async function getPersistedCaseProgress(caseSlug: string): Promise<Persis
 
 export async function getOrCreateCaseSession(caseSlug: string) {
   const sessionKey = await ensureSessionKey();
+  const db = await getDb();
   const caseRecord = await db.case.findUnique({
     where: { slug: caseSlug },
     select: { id: true },

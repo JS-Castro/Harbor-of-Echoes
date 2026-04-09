@@ -289,7 +289,8 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       description:
         "This first pass maps the authored case graph into a navigable board. The next layer is persisted notes, manual links, and drag state per investigation session.",
       sessionState: "Session State",
-      sessionHelp: "Drag nodes to reorganize the case board. Layout is stored locally.",
+      sessionHelp:
+        "Drag nodes to reorganize the case board. Layout now syncs to your anonymous investigation session.",
       addNote: "Add Note",
       addLinkLabel: "Link Label",
       addLinkPlaceholder: "manual link",
@@ -523,7 +524,8 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       description:
         "Esta primeira versão transforma o grafo narrativo do caso num quadro navegável. O passo seguinte é acrescentar notas persistidas, ligações manuais e estado de arrasto por sessão de investigação.",
       sessionState: "Estado da Sessão",
-      sessionHelp: "Arrasta os nós para reorganizar o quadro. O layout fica guardado localmente.",
+      sessionHelp:
+        "Arrasta os nós para reorganizar o quadro. O layout sincroniza com a tua sessão anónima de investigação.",
       addNote: "Adicionar Nota",
       addLinkLabel: "Etiqueta da Ligação",
       addLinkPlaceholder: "ligação manual",

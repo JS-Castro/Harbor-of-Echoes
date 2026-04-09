@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import * as caseSessionActions from "@/app/actions/case-session";
@@ -26,6 +26,7 @@ describe("BoardCanvas", () => {
     render(<BoardCanvas caseSlug="vale-disappearance" seed={seed} locale="en" />);
 
     const noteInput = screen.getByLabelText("Note Text");
+    await waitFor(() => expect(noteInput).toBeEnabled());
 
     await user.clear(noteInput);
     await user.type(noteInput, "Check harbor manifest");
