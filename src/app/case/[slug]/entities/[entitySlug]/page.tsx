@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import { CaseShell } from "@/components/case-shell";
 import {
-  getCaseBySlug,
-  getCaseLocations,
-  getEntityBySlug,
-  getRelatedEvidence,
+  getCaseBySlugRuntime,
+  getCaseLocationsRuntime,
+  getEntityBySlugRuntime,
+  getRelatedEvidenceRuntime,
 } from "@/lib/case-data";
 import { getCurrentLocale } from "@/lib/i18n-server";
 import { EntityDossier } from "./entity-dossier";
@@ -18,15 +18,19 @@ export default async function EntityDetailPage({
 }: EntityDetailPageProps) {
   const { slug, entitySlug } = await params;
   const locale = await getCurrentLocale();
-  const caseRecord = getCaseBySlug(slug, locale);
-  const entity = getEntityBySlug(slug, entitySlug, locale);
+  const caseRecord = await getCaseBySlugRuntime(slug, locale);
+  const entity = await getEntityBySlugRuntime(slug, entitySlug, locale);
 
   if (!caseRecord || !entity) {
     notFound();
   }
 
-  const relatedEvidence = getRelatedEvidence(slug, entity.relatedEvidenceCodes, locale);
-  const relatedLocations = getCaseLocations(slug, locale).filter((location) =>
+  const relatedEvidence = await getRelatedEvidenceRuntime(
+    slug,
+    entity.relatedEvidenceCodes,
+    locale,
+  );
+  const relatedLocations = (await getCaseLocationsRuntime(slug, locale)).filter((location) =>
     entity.relatedLocationSlugs.includes(location.slug),
   );
 

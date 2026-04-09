@@ -5,9 +5,9 @@ import { EvidenceVisual } from "@/components/evidence-visual";
 import { EvidenceViewTracker } from "@/components/evidence-view-tracker";
 import {
   formatCaseDate,
-  getCaseBySlug,
-  getEvidenceBySlug,
-  getRelatedEntities,
+  getCaseBySlugRuntime,
+  getEvidenceBySlugRuntime,
+  getRelatedEntitiesRuntime,
 } from "@/lib/case-data";
 import { getDictionary, getEvidenceTypeLabel } from "@/lib/i18n";
 import { getCurrentLocale } from "@/lib/i18n-server";
@@ -22,14 +22,18 @@ export default async function EvidenceDetailPage({
   const { slug, evidenceSlug } = await params;
   const locale = await getCurrentLocale();
   const dictionary = getDictionary(locale);
-  const caseRecord = getCaseBySlug(slug, locale);
-  const evidence = getEvidenceBySlug(slug, evidenceSlug, locale);
+  const caseRecord = await getCaseBySlugRuntime(slug, locale);
+  const evidence = await getEvidenceBySlugRuntime(slug, evidenceSlug, locale);
 
   if (!caseRecord || !evidence) {
     notFound();
   }
 
-  const relatedEntities = getRelatedEntities(slug, evidence.relatedEntitySlugs, locale);
+  const relatedEntities = await getRelatedEntitiesRuntime(
+    slug,
+    evidence.relatedEntitySlugs,
+    locale,
+  );
 
   return (
     <CaseShell

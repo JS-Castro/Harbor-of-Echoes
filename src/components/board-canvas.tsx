@@ -16,6 +16,7 @@ import ReactFlow, {
   type NodeChange,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { loadBoardSnapshot, saveBoardSnapshot } from "@/app/actions/case-session";
 import {
   BOARD_SURFACE_OFFSET,
   BOARD_SURFACE_SIZE,
@@ -128,6 +129,7 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
   const dictionary = getDictionary(locale);
   const storedSession = useBoardStore((state) => state.sessions[caseSlug]);
   const hydrateCase = useBoardStore((state) => state.hydrateCase);
+  const setSnapshot = useBoardStore((state) => state.setSnapshot);
   const setNodes = useBoardStore((state) => state.setNodes);
   const setEdges = useBoardStore((state) => state.setEdges);
   const removeNode = useBoardStore((state) => state.removeNode);
@@ -147,12 +149,47 @@ export function BoardCanvas({ caseSlug, seed, locale }: BoardCanvasProps) {
   const targetConnectorRefs = useRef(new Map<string, HTMLButtonElement>());
   const dragOffsetRef = useRef({ x: 0, y: 0 });
   const panOriginRef = useRef({ x: 0, y: 0, viewportX: 0, viewportY: 0 });
+  const [hasLoadedSnapshot, setHasLoadedSnapshot] = useState(false);
 
   useEffect(() => {
     hydrateCase(caseSlug, seed);
   }, [caseSlug, hydrateCase, seed]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    void loadBoardSnapshot(caseSlug).then((snapshot) => {
+      if (cancelled) {
+        return;
+      }
+
+      if (snapshot) {
+        setSnapshot(caseSlug, snapshot);
+      }
+
+      setHasLoadedSnapshot(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [caseSlug, setSnapshot]);
+
   const activeSession = storedSession ?? seed;
+
+  useEffect(() => {
+    if (!hasLoadedSnapshot || !storedSession) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      void saveBoardSnapshot(caseSlug, storedSession);
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [caseSlug, hasLoadedSnapshot, storedSession]);
 
   useEffect(() => {
     function handlePointerMove(event: PointerEvent) {

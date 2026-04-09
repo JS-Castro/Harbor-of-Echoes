@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { BoardCanvas } from "@/components/board-canvas";
 import { CaseShell } from "@/components/case-shell";
-import { getBoardSeed, getCaseBySlug } from "@/lib/case-data";
+import { getBoardSeedRuntime, getCaseBySlugRuntime } from "@/lib/case-data";
 import { getDictionary } from "@/lib/i18n";
 import { getCurrentLocale } from "@/lib/i18n-server";
 
@@ -13,13 +13,13 @@ export default async function BoardPage({ params }: BoardPageProps) {
   const { slug } = await params;
   const locale = await getCurrentLocale();
   const dictionary = getDictionary(locale);
-  const caseRecord = getCaseBySlug(slug, locale);
+  const caseRecord = await getCaseBySlugRuntime(slug, locale);
 
   if (!caseRecord) {
     notFound();
   }
 
-  const board = getBoardSeed(slug);
+  const board = await getBoardSeedRuntime(slug, locale);
 
   return (
     <CaseShell

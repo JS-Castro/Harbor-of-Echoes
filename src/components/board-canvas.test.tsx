@@ -1,12 +1,22 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
+import * as caseSessionActions from "@/app/actions/case-session";
 import { BoardCanvas } from "@/components/board-canvas";
 import { getBoardSeed } from "@/lib/case-data";
 import { useBoardStore } from "@/stores/board-store";
 
+vi.mock("@/app/actions/case-session", () => ({
+  loadBoardSnapshot: vi.fn(),
+  saveBoardSnapshot: vi.fn(),
+}));
+
 describe("BoardCanvas", () => {
   beforeEach(() => {
     useBoardStore.setState({ sessions: {} });
+    vi.restoreAllMocks();
+    vi.mocked(caseSessionActions.loadBoardSnapshot).mockResolvedValue(null);
+    vi.mocked(caseSessionActions.saveBoardSnapshot).mockResolvedValue();
   });
 
   it("adds and removes a manual note from the visible overlay controls", async () => {

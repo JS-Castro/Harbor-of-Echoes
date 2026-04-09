@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { CaseShell } from "@/components/case-shell";
 import { CaseEnding } from "@/components/case-ending";
-import { getCaseBySlug, getCaseEvidence } from "@/lib/case-data";
+import { getCaseBySlugRuntime, getCaseEvidenceRuntime } from "@/lib/case-data";
 import { getDictionary } from "@/lib/i18n";
 import { getCurrentLocale } from "@/lib/i18n-server";
 
@@ -13,13 +13,13 @@ export default async function CaseEndingPage({ params }: EndingPageProps) {
   const { slug } = await params;
   const locale = await getCurrentLocale();
   const dictionary = getDictionary(locale);
-  const caseRecord = getCaseBySlug(slug, locale);
+  const caseRecord = await getCaseBySlugRuntime(slug, locale);
 
   if (!caseRecord) {
     notFound();
   }
 
-  const evidence = getCaseEvidence(slug, locale);
+  const evidence = await getCaseEvidenceRuntime(slug, locale);
 
   return (
     <CaseShell

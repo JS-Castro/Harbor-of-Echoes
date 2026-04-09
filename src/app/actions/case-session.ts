@@ -1,26 +1,36 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { getCaseUnlocks } from "@/lib/case-data";
+import {
+  deserializeBoardSnapshot,
+  serializeBoardNode,
+} from "@/lib/board-session";
+import { getCaseUnlocksRuntime } from "@/lib/case-data";
 import {
   getOrCreateCaseSession,
   getPersistedCaseProgress,
 } from "@/lib/case-session-server";
 import {
   bestCaseAnswerIndexes,
+  reportDraftHypothesisTitle,
   type ReportAxis,
   type ReportSelections,
   type ReportSubmission,
 } from "@/lib/report-logic";
+import type { BoardSnapshot } from "@/stores/board-store";
 import { getDictionary, normalizeLocale } from "@/lib/i18n";
 
-function getRequiredEvidenceCodes(caseSlug: string) {
-  const reportUnlock = getCaseUnlocks(caseSlug).find(
+async function getRequiredEvidenceCodes(caseSlug: string) {
+  const reportUnlock = (await getCaseUnlocksRuntime(caseSlug)).find(
     (unlock) => unlock.targetType === "report" && unlock.targetCode === "final-report",
   );
+  const ruleConfig =
+    typeof reportUnlock?.ruleConfig === "object" && reportUnlock.ruleConfig
+      ? (reportUnlock.ruleConfig as { requiredEvidenceCodes?: unknown })
+      : {};
 
-  return Array.isArray(reportUnlock?.ruleConfig?.requiredEvidenceCodes)
-    ? reportUnlock.ruleConfig.requiredEvidenceCodes
+  return Array.isArray(ruleConfig.requiredEvidenceCodes)
+    ? ruleConfig.requiredEvidenceCodes.filter((code): code is string => typeof code === "string")
     : [];
 }
 
@@ -68,17 +78,140 @@ export async function loadCaseProgress(caseSlug: string) {
   return getPersistedCaseProgress(caseSlug);
 }
 
+export async function loadBoardSnapshot(caseSlug: string): Promise<BoardSnapshot | null> {
+  const session = await getOrCreateCaseSession(caseSlug);
+
+  const boardNodes = await db.boardNode.findMany({
+    where: { sessionId: session.id },
+    orderBy: { createdAt: "asc" },
+    select: {
+      nodeRefId: true,
+      nodeType: true,
+      posX: true,
+      posY: true,
+      note: true,
+    },
+  });
+
+  if (boardNodes.length === 0) {
+    return null;
+  }
+
+  const boardEdges = await db.boardEdge.findMany({
+    where: { sessionId: session.id },
+    include: {
+      fromNode: { select: { nodeRefId: true } },
+      toNode: { select: { nodeRefId: true } },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  return deserializeBoardSnapshot(boardNodes, boardEdges);
+}
+
+export async function saveBoardSnapshot(caseSlug: string, snapshot: BoardSnapshot) {
+  const session = await getOrCreateCaseSession(caseSlug);
+
+  await db.$transaction(async (tx) => {
+    await tx.boardEdge.deleteMany({
+      where: { sessionId: session.id },
+    });
+
+    await tx.boardNode.deleteMany({
+      where: { sessionId: session.id },
+    });
+
+    const createdNodes = new Map<string, string>();
+
+    for (const node of snapshot.nodes) {
+      const createdNode = await tx.boardNode.create({
+        data: {
+          sessionId: session.id,
+          nodeType:
+            node.type === "entity"
+              ? "ENTITY"
+              : node.type === "evidence"
+                ? "EVIDENCE"
+                : "HYPOTHESIS",
+          nodeRefId: node.id,
+          posX: node.position.x,
+          posY: node.position.y,
+          note: serializeBoardNode(node),
+        },
+        select: { id: true },
+      });
+
+      createdNodes.set(node.id, createdNode.id);
+    }
+
+    for (const edge of snapshot.edges) {
+      const fromNodeId = createdNodes.get(edge.source);
+      const toNodeId = createdNodes.get(edge.target);
+
+      if (!fromNodeId || !toNodeId) {
+        continue;
+      }
+
+      await tx.boardEdge.create({
+        data: {
+          sessionId: session.id,
+          fromNodeId,
+          toNodeId,
+          label: edge.label,
+        },
+      });
+    }
+  });
+}
+
 export async function saveReportSelections(caseSlug: string, selections: ReportSelections) {
-  await getOrCreateCaseSession(caseSlug);
+  const session = await getOrCreateCaseSession(caseSlug);
+
+  const serializedSelections = JSON.stringify(selections);
+  const existingDraft = await db.hypothesis.findFirst({
+    where: {
+      sessionId: session.id,
+      title: reportDraftHypothesisTitle,
+    },
+    select: { id: true },
+  });
+
+  if (existingDraft) {
+    await db.hypothesis.update({
+      where: { id: existingDraft.id },
+      data: {
+        claim: serializedSelections,
+        status: "DRAFT",
+      },
+    });
+  } else {
+    await db.hypothesis.create({
+      data: {
+        sessionId: session.id,
+        title: reportDraftHypothesisTitle,
+        claim: serializedSelections,
+        status: "DRAFT",
+      },
+    });
+  }
+
   return selections;
 }
 
 export async function resetReportState(caseSlug: string) {
   const session = await getOrCreateCaseSession(caseSlug);
 
-  await db.reportSubmission.deleteMany({
-    where: { sessionId: session.id },
-  });
+  await db.$transaction([
+    db.reportSubmission.deleteMany({
+      where: { sessionId: session.id },
+    }),
+    db.hypothesis.deleteMany({
+      where: {
+        sessionId: session.id,
+        title: reportDraftHypothesisTitle,
+      },
+    }),
+  ]);
 
   return { selections: {}, submission: null };
 }
@@ -95,7 +228,7 @@ export async function submitReport(
   }
 
   const reviewedEvidenceCodes = new Set(session.evidenceEntries.map((entry) => entry.evidence.code));
-  const requiredEvidenceCodes = getRequiredEvidenceCodes(caseSlug);
+  const requiredEvidenceCodes = await getRequiredEvidenceCodes(caseSlug);
   const hasUnlockedFinalReport = requiredEvidenceCodes.every((code) => reviewedEvidenceCodes.has(code));
 
   if (!hasUnlockedFinalReport) {
@@ -131,6 +264,13 @@ export async function submitReport(
     where: { id: session.id },
     data: {
       status: "COMPLETED",
+    },
+  });
+
+  await db.hypothesis.deleteMany({
+    where: {
+      sessionId: session.id,
+      title: reportDraftHypothesisTitle,
     },
   });
 

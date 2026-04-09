@@ -20,6 +20,7 @@ export type AxisExplanation = {
   conflictingEvidenceCodes: string[];
 };
 
+export const reportDraftHypothesisTitle = "__report_draft__";
 export const totalReportAxes = 3;
 
 export const bestCaseAnswerIndexes: Record<ReportAxis, number> = {
@@ -118,4 +119,17 @@ export function parseStoredStringArray(value: string | null) {
   return Array.isArray(parsed)
     ? parsed.filter((item): item is string => typeof item === "string")
     : [];
+}
+
+export function parseReportSelections(value: string | null | undefined): ReportSelections {
+  if (!value) {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(value) as ReportSelections;
+    return typeof parsed === "object" && parsed ? parsed : {};
+  } catch {
+    return {};
+  }
 }

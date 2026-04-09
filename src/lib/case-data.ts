@@ -16,6 +16,15 @@ export type EvidenceRecord = (typeof evidenceFile)[number];
 export type EventRecord = (typeof eventsFile)[number];
 export type LocationRecord = (typeof locationsFile)[number];
 export type UnlockRecord = (typeof unlocksFile)[number];
+export type RuntimeUnlockRecord = {
+  id: string;
+  targetType: string;
+  targetCode: string;
+  ruleType: string;
+  sortOrder: number;
+  notes: string;
+  ruleConfig: Record<string, unknown>;
+};
 
 export type BoardSeedNode = {
   id: string;
@@ -43,8 +52,65 @@ export type BoardSeed = {
 const caseRecord = caseFile;
 const unlocks = unlocksFile;
 
+const dbConfidenceMap = {
+  LOW: "low",
+  MEDIUM: "medium",
+  HIGH: "high",
+} as const;
+
+const dbEvidenceTypeMap = {
+  NOTE: "note",
+  PHOTO: "photo",
+  MESSAGE: "message",
+  REPORT: "report",
+  TRANSCRIPT: "transcript",
+  AUDIO: "audio",
+  LOG: "log",
+} as const;
+
+const dbTimePrecisionMap = {
+  EXACT: "minute",
+  DATE_ONLY: "day",
+  APPROXIMATE: "approximate",
+} as const;
+
+const dbCertaintyMap = {
+  DISPUTED: "low",
+  PLAUSIBLE: "medium",
+  CONFIRMED: "high",
+} as const;
+
 function getLocalizedCaseContent(locale: AppLocale | CaseLocaleCode = "en") {
   return getValeDisappearanceLocale(locale);
+}
+
+function isKnownCaseSlug(slug: string) {
+  return caseRecord.slug === slug;
+}
+
+function parseJsonRecord(value: unknown) {
+  return typeof value === "object" && value ? (value as Record<string, unknown>) : {};
+}
+
+async function withCaseRuntimeFallback<T>(
+  slug: string,
+  fallback: () => T,
+  loader: () => Promise<T>,
+) {
+  if (!isKnownCaseSlug(slug)) {
+    return fallback();
+  }
+
+  try {
+    return await loader();
+  } catch {
+    return fallback();
+  }
+}
+
+async function getDb() {
+  const { db } = await import("@/lib/db");
+  return db;
 }
 
 export function getCaseBySlug(slug: string, locale: AppLocale | CaseLocaleCode = "en") {
@@ -144,6 +210,354 @@ export function formatCaseDate(
 export function getBoardSeed(caseSlug: string, locale: AppLocale | CaseLocaleCode = "en") {
   const caseEntities = getCaseEntities(caseSlug, locale).slice(0, 6);
   const caseEvidence = getCaseEvidence(caseSlug, locale).slice(0, 6);
+
+  const entityNodes = caseEntities.map((entity, index) => ({
+    id: entity.slug,
+    type: "entity",
+    position: {
+      x: 48 + (index % 2) * 280,
+      y: 48 + Math.floor(index / 2) * 132,
+    },
+    data: {
+      label: entity.name,
+      meta: entity.role,
+      tone: "entity" as const,
+    },
+  }));
+
+  const evidenceNodes = caseEvidence.map((item, index) => ({
+    id: item.code,
+    type: "evidence",
+    position: {
+      x: 660 + (index % 2) * 280,
+      y: 48 + Math.floor(index / 2) * 132,
+    },
+    data: {
+      label: item.title,
+      meta: item.code,
+      tone: "evidence" as const,
+    },
+  }));
+
+  const evidenceEdges = caseEvidence.flatMap((item) =>
+    item.relatedEntitySlugs
+      .slice(0, 2)
+      .map((entitySlug, index) => {
+        const entity = caseEntities.find((candidate) => candidate.slug === entitySlug);
+
+        if (!entity) {
+          return null;
+        }
+
+        return {
+          id: `${entity.slug}-${item.code}-${index}`,
+          source: entity.slug,
+          target: item.code,
+        };
+      })
+      .filter((edge): edge is NonNullable<typeof edge> => edge !== null),
+  );
+
+  return {
+    nodes: [...entityNodes, ...evidenceNodes],
+    edges: evidenceEdges,
+  } satisfies BoardSeed;
+}
+
+export async function getCaseBySlugRuntime(
+  slug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<ReturnType<typeof getCaseBySlug>> {
+  return withCaseRuntimeFallback(
+    slug,
+    () => getCaseBySlug(slug, locale),
+    async () => {
+      const db = await getDb();
+      const caseRow = await db.case.findUnique({
+        where: { slug },
+        select: { id: true },
+      });
+
+      return caseRow ? getLocalizedCaseContent(locale).case : null;
+    },
+  );
+}
+
+export async function getCaseEntitiesRuntime(
+  slug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<EntityRecord[]> {
+  return withCaseRuntimeFallback(
+    slug,
+    () => getCaseEntities(slug, locale),
+    async () => {
+      const db = await getDb();
+      const localizedEntities = getLocalizedCaseContent(locale).entities;
+      const rows = await db.entity.findMany({
+        where: { case: { slug } },
+        orderBy: { createdAt: "asc" },
+      });
+
+      return rows.flatMap((row) => {
+        const localized = localizedEntities[row.slug];
+
+        if (!localized) {
+          return [];
+        }
+
+        return [
+          {
+            ...localized,
+            name: localized.name ?? row.name,
+            summary: localized.summary ?? row.summary,
+            description: localized.description ?? row.description,
+            publicNotes: localized.publicNotes ?? row.publicNotes ?? "",
+            hiddenNotes: localized.hiddenNotes ?? row.hiddenNotes ?? "",
+          },
+        ];
+      });
+    },
+  );
+}
+
+export async function getCaseEvidenceRuntime(
+  slug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<EvidenceRecord[]> {
+  return withCaseRuntimeFallback(
+    slug,
+    () => getCaseEvidence(slug, locale),
+    async () => {
+      const db = await getDb();
+      const localizedEvidence = getLocalizedCaseContent(locale).evidence;
+      const rows = await db.evidence.findMany({
+        where: { case: { slug } },
+        orderBy: { createdAt: "asc" },
+      });
+
+      return rows.flatMap((row) => {
+        const localized = localizedEvidence[row.code];
+        if (!localized) {
+          return [];
+        }
+        const content = parseJsonRecord(row.content);
+        const relatedEntitySlugs = Array.isArray(content.relatedEntitySlugs)
+          ? content.relatedEntitySlugs.filter((item): item is string => typeof item === "string")
+          : localized?.relatedEntitySlugs ?? [];
+        const relatedLocationSlugs = Array.isArray(content.relatedLocationSlugs)
+          ? content.relatedLocationSlugs.filter((item): item is string => typeof item === "string")
+          : localized?.relatedLocationSlugs ?? [];
+
+        return [{
+          ...localized,
+          id: localized.id ?? row.id,
+          slug: row.slug,
+          code: row.code,
+          title: localized.title ?? row.title,
+          type: dbEvidenceTypeMap[row.type],
+          sourceLabel: localized.sourceLabel ?? row.sourceLabel,
+          summary: localized.summary ?? row.summary,
+          content:
+            localized.content ??
+            (typeof content.text === "string" ? content.text : row.summary),
+          confidence: localized.confidence ?? dbConfidenceMap[row.confidence],
+          discoveryPhase: localized.discoveryPhase ?? row.discoveryPhase,
+          sortDate: localized.sortDate ?? row.sortDate?.toISOString() ?? null,
+          relatedEntitySlugs,
+          relatedLocationSlugs,
+        }];
+      });
+    },
+  );
+}
+
+export async function getCaseEventsRuntime(
+  slug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<EventRecord[]> {
+  return withCaseRuntimeFallback(
+    slug,
+    () => getCaseEvents(slug, locale),
+    async () => {
+      const db = await getDb();
+      const localizedEvents = getLocalizedCaseContent(locale).events;
+      const rows = await db.event.findMany({
+        where: { case: { slug } },
+        include: {
+          location: { select: { slug: true } },
+          participants: { include: { entity: { select: { slug: true } } } },
+        },
+        orderBy: { createdAt: "asc" },
+      });
+
+      return rows.flatMap((row) => {
+        const localized = localizedEvents[row.slug];
+        if (!localized) {
+          return [];
+        }
+
+        return [{
+          ...localized,
+          id: localized.id ?? row.id,
+          slug: row.slug,
+          title: localized.title ?? row.title,
+          description: localized.description ?? row.description,
+          eventTime: localized.eventTime ?? row.eventTime?.toISOString() ?? "",
+          timePrecision: localized.timePrecision ?? dbTimePrecisionMap[row.timePrecision],
+          certainty: localized.certainty ?? dbCertaintyMap[row.certainty],
+          locationSlug: localized.locationSlug ?? row.location?.slug ?? null,
+          relatedEntitySlugs:
+            localized.relatedEntitySlugs ??
+            row.participants.map((participant) => participant.entity.slug),
+        }];
+      });
+    },
+  );
+}
+
+export async function getCaseLocationsRuntime(
+  slug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<LocationRecord[]> {
+  return withCaseRuntimeFallback(
+    slug,
+    () => getCaseLocations(slug, locale),
+    async () => {
+      const db = await getDb();
+      const localizedLocations = getLocalizedCaseContent(locale).locations;
+      const rows = await db.location.findMany({
+        where: { case: { slug } },
+        orderBy: { createdAt: "asc" },
+      });
+
+      return rows.flatMap((row) => {
+        const localized = localizedLocations[row.slug];
+        if (!localized) {
+          return [];
+        }
+
+        return [{
+          ...localized,
+          id: localized.id ?? row.id,
+          slug: row.slug,
+          name: localized.name ?? row.name,
+          summary: localized.summary ?? row.summary,
+        }];
+      });
+    },
+  );
+}
+
+export async function getCaseUnlocksRuntime(
+  slug: string,
+): Promise<RuntimeUnlockRecord[]> {
+  return withCaseRuntimeFallback(
+    slug,
+    () =>
+      getCaseUnlocks(slug).map((unlock) => ({
+        id: unlock.id,
+        targetType: unlock.targetType,
+        targetCode: unlock.targetCode,
+        ruleType: unlock.ruleType,
+        sortOrder: unlock.sortOrder,
+        notes: unlock.notes,
+        ruleConfig: unlock.ruleConfig as Record<string, unknown>,
+      })),
+    async () => {
+      const db = await getDb();
+      const rows = await db.unlockRule.findMany({
+        where: { case: { slug } },
+        orderBy: { createdAt: "asc" },
+      });
+      const fallbackByTarget = new Map(unlocks.map((unlock) => [unlock.targetCode, unlock]));
+
+      return rows.flatMap((row) => {
+        const fallback = fallbackByTarget.get(row.targetRefId);
+        if (!fallback) {
+          return [];
+        }
+        const ruleConfig = parseJsonRecord(row.ruleConfig);
+
+        return [{
+          ...fallback,
+          id: fallback.id ?? row.id,
+          targetType:
+            typeof ruleConfig.targetType === "string" ? ruleConfig.targetType : fallback.targetType,
+          targetCode: fallback.targetCode ?? row.targetRefId,
+          ruleType: fallback.ruleType ?? "requires_case_progress",
+          sortOrder:
+            fallback.sortOrder ??
+            (typeof ruleConfig.sortOrder === "number"
+              ? (ruleConfig.sortOrder as number)
+              : 0),
+          notes:
+            fallback.notes ??
+            (typeof ruleConfig.notes === "string"
+              ? (ruleConfig.notes as string)
+              : ""),
+          ruleConfig: {
+            ...fallback.ruleConfig,
+            ...ruleConfig,
+          },
+        }];
+      });
+    },
+  );
+}
+
+export async function getEntityBySlugRuntime(
+  caseSlug: string,
+  entitySlug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<EntityRecord | null> {
+  const entities = await getCaseEntitiesRuntime(caseSlug, locale);
+  return entities.find((item) => item.slug === entitySlug) ?? null;
+}
+
+export async function getEvidenceBySlugRuntime(
+  caseSlug: string,
+  evidenceSlug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<EvidenceRecord | null> {
+  const evidence = await getCaseEvidenceRuntime(caseSlug, locale);
+  return evidence.find((item) => item.slug === evidenceSlug) ?? null;
+}
+
+export async function getLocationBySlugRuntime(
+  caseSlug: string,
+  locationSlug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<LocationRecord | null> {
+  const locations = await getCaseLocationsRuntime(caseSlug, locale);
+  return locations.find((item) => item.slug === locationSlug) ?? null;
+}
+
+export async function getRelatedEvidenceRuntime(
+  caseSlug: string,
+  codes: string[],
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<EvidenceRecord[]> {
+  const evidence = await getCaseEvidenceRuntime(caseSlug, locale);
+  const evidenceMap = new Set(codes);
+  return evidence.filter((item) => evidenceMap.has(item.code));
+}
+
+export async function getRelatedEntitiesRuntime(
+  caseSlug: string,
+  slugs: string[],
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<EntityRecord[]> {
+  const entities = await getCaseEntitiesRuntime(caseSlug, locale);
+  const entityMap = new Set(slugs);
+  return entities.filter((item) => entityMap.has(item.slug));
+}
+
+export async function getBoardSeedRuntime(
+  caseSlug: string,
+  locale: AppLocale | CaseLocaleCode = "en",
+): Promise<BoardSeed> {
+  const caseEntities = (await getCaseEntitiesRuntime(caseSlug, locale)).slice(0, 6);
+  const caseEvidence = (await getCaseEvidenceRuntime(caseSlug, locale)).slice(0, 6);
 
   const entityNodes = caseEntities.map((entity, index) => ({
     id: entity.slug,

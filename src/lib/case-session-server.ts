@@ -1,7 +1,12 @@
 import { randomUUID } from "crypto";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
-import type { ReportSelections, ReportSubmission } from "@/lib/report-logic";
+import {
+  parseReportSelections,
+  reportDraftHypothesisTitle,
+  type ReportSelections,
+  type ReportSubmission,
+} from "@/lib/report-logic";
 
 const caseSessionCookieName = "hoe-case-session";
 
@@ -90,6 +95,10 @@ export async function getPersistedCaseProgress(caseSlug: string): Promise<Persis
           where: { isRead: true },
           include: { evidence: true },
         },
+        hypotheses: {
+          where: { title: reportDraftHypothesisTitle },
+          take: 1,
+        },
         reportSubmission: true,
       },
     });
@@ -104,7 +113,7 @@ export async function getPersistedCaseProgress(caseSlug: string): Promise<Persis
 
     return {
       reviewedEvidenceCodes: session.evidenceEntries.map((entry) => entry.evidence.code).sort(),
-      reportSelections: {},
+      reportSelections: parseReportSelections(session.hypotheses[0]?.claim),
       reportSubmission: mapStoredSubmission(session.reportSubmission),
     };
   } catch {
@@ -137,6 +146,10 @@ export async function getOrCreateCaseSession(caseSlug: string) {
         where: { isRead: true },
         include: { evidence: true },
       },
+      hypotheses: {
+        where: { title: reportDraftHypothesisTitle },
+        take: 1,
+      },
       reportSubmission: true,
     },
   });
@@ -155,6 +168,10 @@ export async function getOrCreateCaseSession(caseSlug: string) {
       evidenceEntries: {
         where: { isRead: true },
         include: { evidence: true },
+      },
+      hypotheses: {
+        where: { title: reportDraftHypothesisTitle },
+        take: 1,
       },
       reportSubmission: true,
     },

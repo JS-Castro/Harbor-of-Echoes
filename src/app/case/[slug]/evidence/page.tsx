@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseShell } from "@/components/case-shell";
-import { formatCaseDate, getCaseBySlug, getCaseEvidence } from "@/lib/case-data";
+import {
+  formatCaseDate,
+  getCaseBySlugRuntime,
+  getCaseEvidenceRuntime,
+} from "@/lib/case-data";
 import { getDictionary, getEvidenceTypeLabel } from "@/lib/i18n";
 import { getCurrentLocale } from "@/lib/i18n-server";
 
@@ -13,13 +17,13 @@ export default async function EvidencePage({ params }: EvidencePageProps) {
   const { slug } = await params;
   const locale = await getCurrentLocale();
   const dictionary = getDictionary(locale);
-  const caseRecord = getCaseBySlug(slug, locale);
+  const caseRecord = await getCaseBySlugRuntime(slug, locale);
 
   if (!caseRecord) {
     notFound();
   }
 
-  const evidence = getCaseEvidence(slug, locale).sort((left, right) =>
+  const evidence = (await getCaseEvidenceRuntime(slug, locale)).sort((left, right) =>
     left.code.localeCompare(right.code),
   );
 

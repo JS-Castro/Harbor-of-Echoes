@@ -4,11 +4,11 @@ import { CaseShell } from "@/components/case-shell";
 import { DashboardReportProgress } from "@/components/dashboard-report-progress";
 import {
   formatCaseDate,
-  getCaseBySlug,
-  getCaseEntities,
-  getCaseEvidence,
-  getCaseEvents,
-  getCaseUnlocks,
+  getCaseBySlugRuntime,
+  getCaseEntitiesRuntime,
+  getCaseEvidenceRuntime,
+  getCaseEventsRuntime,
+  getCaseUnlocksRuntime,
 } from "@/lib/case-data";
 import { getDictionary } from "@/lib/i18n";
 import { getCurrentLocale } from "@/lib/i18n-server";
@@ -21,21 +21,27 @@ export default async function CaseDashboardPage({ params }: CasePageProps) {
   const { slug } = await params;
   const locale = await getCurrentLocale();
   const dictionary = getDictionary(locale);
-  const caseRecord = getCaseBySlug(slug, locale);
+  const caseRecord = await getCaseBySlugRuntime(slug, locale);
 
   if (!caseRecord) {
     notFound();
   }
 
-  const evidence = getCaseEvidence(slug, locale);
-  const entities = getCaseEntities(slug, locale);
-  const events = getCaseEvents(slug, locale);
-  const unlocks = getCaseUnlocks(slug);
+  const evidence = await getCaseEvidenceRuntime(slug, locale);
+  const entities = await getCaseEntitiesRuntime(slug, locale);
+  const events = await getCaseEventsRuntime(slug, locale);
+  const unlocks = await getCaseUnlocksRuntime(slug);
   const reportUnlock = unlocks.find(
     (unlock) => unlock.targetType === "report" && unlock.targetCode === "final-report",
   );
-  const requiredEvidenceCodes = Array.isArray(reportUnlock?.ruleConfig?.requiredEvidenceCodes)
-    ? reportUnlock.ruleConfig.requiredEvidenceCodes
+  const reportUnlockConfig =
+    typeof reportUnlock?.ruleConfig === "object" && reportUnlock.ruleConfig
+      ? (reportUnlock.ruleConfig as { requiredEvidenceCodes?: unknown })
+      : {};
+  const requiredEvidenceCodes = Array.isArray(reportUnlockConfig.requiredEvidenceCodes)
+    ? reportUnlockConfig.requiredEvidenceCodes.filter(
+        (code): code is string => typeof code === "string",
+      )
     : [];
   const recentEvidence = [...evidence]
     .sort((left, right) => right.discoveryPhase - left.discoveryPhase)

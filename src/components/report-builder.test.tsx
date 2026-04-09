@@ -133,4 +133,30 @@ describe("ReportBuilder", () => {
     expect(screen.getByRole("button", { name: "Submit Report" })).toBeDisabled();
     expect(screen.getByText("Still Missing")).toBeInTheDocument();
   });
+
+  it("restores saved draft selections from persisted progress", async () => {
+    vi.mocked(caseSessionActions.loadCaseProgress).mockResolvedValue({
+      reviewedEvidenceCodes: [],
+      reportSelections: {
+        cause: "Accidental fall",
+      },
+      reportSubmission: null,
+    });
+
+    render(
+      <ReportBuilder
+        caseSlug="vale-disappearance"
+        locale="en"
+        evidenceCatalog={evidenceCatalog}
+        requiredEvidenceCodes={["EV-001", "EV-009"]}
+      />,
+    );
+
+    await screen.findByText("0/2 required files reviewed");
+    expect(screen.getByRole("button", { name: "Accidental fall" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getAllByText("Accidental fall")).toHaveLength(2);
+  });
 });

@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import { CaseShell } from "@/components/case-shell";
 import {
   formatCaseDate,
-  getCaseBySlug,
-  getCaseEvents,
-  getLocationBySlug,
+  getCaseBySlugRuntime,
+  getCaseEventsRuntime,
+  getLocationBySlugRuntime,
 } from "@/lib/case-data";
 import { getCertaintyLabel, getDictionary } from "@/lib/i18n";
 import { getCurrentLocale } from "@/lib/i18n-server";
@@ -17,14 +17,22 @@ export default async function TimelinePage({ params }: TimelinePageProps) {
   const { slug } = await params;
   const locale = await getCurrentLocale();
   const dictionary = getDictionary(locale);
-  const caseRecord = getCaseBySlug(slug, locale);
+  const caseRecord = await getCaseBySlugRuntime(slug, locale);
 
   if (!caseRecord) {
     notFound();
   }
 
-  const events = getCaseEvents(slug, locale).sort((left, right) =>
+  const events = (await getCaseEventsRuntime(slug, locale)).sort((left, right) =>
     left.eventTime.localeCompare(right.eventTime),
+  );
+  const locations = await Promise.all(
+    events.map((event) =>
+      event.locationSlug ? getLocationBySlugRuntime(slug, event.locationSlug, locale) : null,
+    ),
+  );
+  const locationByEventSlug = new Map(
+    events.map((event, index) => [event.slug, locations[index]]),
   );
 
   return (
@@ -40,7 +48,7 @@ export default async function TimelinePage({ params }: TimelinePageProps) {
         </p>
         <div className="mt-8 space-y-5">
           {events.map((event) => {
-            const location = getLocationBySlug(slug, event.locationSlug, locale);
+            const location = locationByEventSlug.get(event.slug) ?? null;
 
             return (
               <article
