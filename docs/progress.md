@@ -21,6 +21,8 @@ Implemented:
 - locale switcher persisted by cookie
 - pt-PT localized case content overrides for case, entities, evidence, events, and locations
 - evidence detail and entity dossier pages upgraded with placeholder visuals
+- final report page now supports interactive theory selection with local per-case persistence and a live theory summary
+- report page currently supports axis selection, local persistence, live summary updates, and theory reset per case
 - investigation board now supports manual note nodes with local persistence
 - board UX now includes manual note removal and avoids duplicating the same source-target connection
 - board rendering is currently using a custom interactive overlay above a hidden React Flow layer because the authored React Flow canvas became visually unreliable in-browser
@@ -29,6 +31,7 @@ Implemented:
 - board overlay now has working replacement viewport controls for the visible layer, including overlay zoom buttons, background drag-to-pan, and reset-to-center behavior
 - visible note cards now expose note removal directly in the overlay instead of relying on hidden underlying markup
 - initial automated test coverage expanded to frontend components and board state operations
+- report builder has focused component coverage for selection persistence and reset behavior
 - board overlay has a focused component test covering manual note creation and visible removal
 - board canvas refactored to extract overlay helpers and overlay rendering parts so the main component is easier to reason about while keeping the current interaction model
 - GitHub Actions pipeline added for `lint`, `test`, and `build`
@@ -95,6 +98,8 @@ Known environment constraint:
 
 - no active uncommitted work at the moment; latest board stabilization and refactor pass has been committed and pushed
 - main remaining board risk is architectural: the app still relies on a custom overlay above hidden React Flow instead of a single renderer path
+- report flow is now more useful, but still does not score or validate the player's theory against evidence
+- report flow still does not score the theory, validate it against evidence, or provide a final submission outcome
 - keep `docs/progress.md` updated during active work so future AI sessions can resume from the latest real state
 
 ## Next Steps
@@ -104,6 +109,8 @@ Known environment constraint:
 - review the board implementation with the goal of making it simpler and easier to work on, ideally by restoring a clean React Flow-based path instead of a growing overlay workaround
 - prioritize a board UX/UI that feels straightforward to use: visible nodes, obvious linking, working controls, and low-friction interactions
 - confirm current board interactions remain stable in-browser: bidirectional connector drag, note dragging, visible note removal, link selection with `Delete`, zoom buttons, wheel zoom, and drag-to-pan
+- decide the next report iteration: scoring, evidence-backed explanation, or saved submission flow
+- decide whether the report should become a scored verdict screen, an evidence-backed explanation view, or a final case submission step
 - update `docs/progress.md` as work lands so the next AI can resume without re-discovery
 - decide the next board iteration after notes and links are stable
 

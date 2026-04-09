@@ -105,6 +105,13 @@ type StaticDictionary = {
   report: {
     tagline: string;
     heading: string;
+    instructions: string;
+    currentTheory: string;
+    pendingAnswer: string;
+    axisPending: string;
+    axisLocked: string;
+    completion: (completed: number, total: number) => string;
+    reset: string;
     bestCaseAnswer: string;
     axes: {
       cause: string;
@@ -250,6 +257,14 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
     report: {
       tagline: "Structured final report aligned with the authored scoring axes.",
       heading: "Final Report",
+      instructions:
+        "Choose one answer for each axis to capture your current theory. Selections are stored locally for this case.",
+      currentTheory: "Current Theory",
+      pendingAnswer: "No conclusion selected yet.",
+      axisPending: "Open",
+      axisLocked: "Selected",
+      completion: (completed, total) => `${completed}/${total} axes filled`,
+      reset: "Reset Theory",
       bestCaseAnswer: "Best-Case Answer",
       axes: {
         cause: "Cause",
@@ -425,6 +440,14 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
     report: {
       tagline: "Relatório final estruturado e alinhado com os eixos de avaliação do caso.",
       heading: "Relatório Final",
+      instructions:
+        "Escolhe uma resposta para cada eixo para registar a tua teoria atual. As escolhas ficam guardadas localmente para este caso.",
+      currentTheory: "Teoria Atual",
+      pendingAnswer: "Ainda não existe uma conclusão selecionada.",
+      axisPending: "Por fechar",
+      axisLocked: "Escolhido",
+      completion: (completed, total) => `${completed}/${total} eixos preenchidos`,
+      reset: "Limpar Teoria",
       bestCaseAnswer: "Melhor Resposta Possível",
       axes: {
         cause: "Causa",
