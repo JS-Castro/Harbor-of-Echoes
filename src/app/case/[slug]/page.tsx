@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseShell } from "@/components/case-shell";
+import { DashboardReportProgress } from "@/components/dashboard-report-progress";
 import {
   formatCaseDate,
   getCaseBySlug,
@@ -30,6 +31,12 @@ export default async function CaseDashboardPage({ params }: CasePageProps) {
   const entities = getCaseEntities(slug, locale);
   const events = getCaseEvents(slug, locale);
   const unlocks = getCaseUnlocks(slug);
+  const reportUnlock = unlocks.find(
+    (unlock) => unlock.targetType === "report" && unlock.targetCode === "final-report",
+  );
+  const requiredEvidenceCodes = Array.isArray(reportUnlock?.ruleConfig?.requiredEvidenceCodes)
+    ? reportUnlock.ruleConfig.requiredEvidenceCodes
+    : [];
   const recentEvidence = [...evidence]
     .sort((left, right) => right.discoveryPhase - left.discoveryPhase)
     .slice(0, 4);
@@ -77,6 +84,14 @@ export default async function CaseDashboardPage({ params }: CasePageProps) {
             {dictionary.dashboard.unlockSummary(unlocks.length)}
           </p>
         </aside>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">
+        <DashboardReportProgress
+          caseSlug={slug}
+          locale={locale}
+          requiredEvidenceCodes={requiredEvidenceCodes}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">

@@ -26,6 +26,10 @@ Implemented:
 - hydration mismatch on the report page was traced to localStorage-backed client state and has now been removed by deferring persisted state loading until after hydration
 - local browser-debugging workflow is usable against the project, but the reliable path for interactive validation is `build` + `start`; scripted Playwright interaction was flaky under `next dev` and worked correctly under `next start`
 - evidence detail pages now mark reviewed case files in local browser storage, and the final report submission is gated behind reviewing the authored evidence set required by `unlock-final-report`
+- dashboard now surfaces report progress from the persisted case session, including archive review progress and whether the case has already been closed
+- submitted reports now render a stronger ending-state presentation in the report view instead of only a compact verdict box
+- the case now has a dedicated `/case/[slug]/ending` route that reads the submitted report from the persisted case session and presents a fuller closing screen / epilogue
+- case progress is now persisted server-side through Prisma-backed `SessionEvidence` and `ReportSubmission` records keyed by an anonymous session cookie, so reviewed evidence and final case completion no longer depend on `localStorage`
 - investigation board now supports manual note nodes with local persistence
 - board UX now includes manual note removal and avoids duplicating the same source-target connection
 - board rendering is currently using a custom interactive overlay above a hidden React Flow layer because the authored React Flow canvas became visually unreliable in-browser
@@ -103,6 +107,8 @@ Known environment constraint:
 - main remaining board risk is architectural: the app still relies on a custom overlay above hidden React Flow instead of a single renderer path
 - the game now has a lightweight end-to-end loop: the player can explore the case, build a final theory in the report, submit it, and receive a simple verdict state
 - current report scoring is intentionally lightweight: it compares the final theory against the authored best-case answer and now surfaces supporting/conflicting evidence links, but it still does not produce a richer narrative ending or a fully systemic unlock engine across the whole app
+- the ending state now has a dedicated route, but it is still driven entirely by local browser state rather than a canonical persisted case-completion system
+- reviewed evidence and final report submission now persist through the server-side session model, but draft in-progress report selections are still client-only and are not yet restored across reloads
 - current debugging/tooling investigation is narrowed: Playwright automation matches real browser behavior against `next start`, so remaining work is to codify that workflow rather than debug the report feature itself
 - keep `docs/progress.md` updated during active work so future AI sessions can resume from the latest real state
 
@@ -115,6 +121,9 @@ Known environment constraint:
 - confirm current board interactions remain stable in-browser: bidirectional connector drag, note dragging, visible note removal, link selection with `Delete`, zoom buttons, wheel zoom, and drag-to-pan
 - decide the next report iteration: evidence-backed explanation, stronger verdict presentation, or unlock-aware submission flow
 - decide the next report iteration: stronger ending presentation, dashboard visibility for report-unlock progress, or a fuller systemic unlock engine beyond the final report gate
+- decide the next report iteration: dedicated ending route/epilogue, broader unlock-aware navigation across the app, or deeper evidence reasoning beyond fixed authored explanations
+- decide the next endgame iteration: persist case completion beyond local browser storage, expose ending availability more broadly in navigation, or deepen the epilogue logic beyond the current score bands
+- decide the next persistence iteration: restore draft report selections from the server, persist board state in the same session model, or surface anonymous session management more explicitly
 - keep using `next start` for reliable automated UI validation on interactive routes, especially when `next dev` shows HMR or hydration-related automation noise
 - update `docs/progress.md` as work lands so the next AI can resume without re-discovery
 - decide the next board iteration after notes and links are stable

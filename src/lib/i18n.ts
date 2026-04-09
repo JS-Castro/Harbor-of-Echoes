@@ -57,6 +57,17 @@ type StaticDictionary = {
     recentLeads: string;
     evidenceByEscalation: string;
     openVault: string;
+    reportStatus: string;
+    openReport: string;
+    openEnding: string;
+    archiveReview: string;
+    reportUnlocked: string;
+    reportLocked: (missing: number) => string;
+    caseStatus: string;
+    caseOpen: string;
+    caseClosed: string;
+    caseStillOpen: string;
+    reportScore: (score: number, total: number) => string;
     phase: string;
     coreCast: string;
   };
@@ -118,10 +129,14 @@ type StaticDictionary = {
     scoreLabel: (score: number, total: number) => string;
     reset: string;
     submit: string;
+    viewEnding: string;
     caseClosed: string;
     verdictPerfect: string;
     verdictStrong: string;
     verdictWeak: string;
+    endingTitle: string;
+    endingSummary: string;
+    submittedAt: (value: string) => string;
     evidenceReview: string;
     supportingEvidence: string;
     conflictingEvidence: string;
@@ -143,6 +158,21 @@ type StaticDictionary = {
       responsibility: string;
       motive: string;
     };
+  };
+  ending: {
+    tagline: string;
+    heading: string;
+    unavailableTitle: string;
+    unavailableCopy: string;
+    finalTheory: string;
+    evidenceTrail: string;
+    nextSteps: string;
+    returnToReport: string;
+    returnToDashboard: string;
+    revisitEvidence: string;
+    epiloguePerfect: string;
+    epilogueStrong: string;
+    epilogueWeak: string;
   };
   entity: {
     subjectFile: string;
@@ -223,6 +253,18 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       recentLeads: "Recent Leads",
       evidenceByEscalation: "Evidence by escalation",
       openVault: "Open vault",
+      reportStatus: "Report Status",
+      openReport: "Open report",
+      openEnding: "Open ending",
+      archiveReview: "Archive Review",
+      reportUnlocked: "The final report is unlocked and ready to submit.",
+      reportLocked: (missing) =>
+        `${missing} required file${missing === 1 ? "" : "s"} still need review before the case can be closed.`,
+      caseStatus: "Case Status",
+      caseOpen: "Open",
+      caseClosed: "Closed",
+      caseStillOpen: "The final report has not been submitted yet.",
+      reportScore: (score, total) => `Submitted verdict score: ${score}/${total}`,
       phase: "Phase",
       coreCast: "Core Cast",
     },
@@ -287,10 +329,14 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       scoreLabel: (score, total) => `${score}/${total} best-case matches`,
       reset: "Reset Theory",
       submit: "Submit Report",
+      viewEnding: "View Ending",
       caseClosed: "Case Closed",
       verdictPerfect: "The final theory fully matches the strongest supported case.",
       verdictStrong: "The final theory is close, but one axis still diverges from the strongest case.",
       verdictWeak: "The final theory closes the case, but it still conflicts with key evidence.",
+      endingTitle: "The archive is sealed. The case now rests on your final reading.",
+      endingSummary: "Final theory submitted.",
+      submittedAt: (value) => `Submitted ${value}`,
       evidenceReview: "Evidence Review",
       supportingEvidence: "Supporting evidence",
       conflictingEvidence: "Conflicting evidence",
@@ -327,6 +373,25 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
         responsibility: "Responsibility: shared cover-up by Pike, Tomas, and Elena.",
         motive: "Motive: concealment of the turbine safety scandal.",
       },
+    },
+    ending: {
+      tagline: "Dedicated closing screen for the final theory, verdict, and aftermath of the case.",
+      heading: "Case Ending",
+      unavailableTitle: "The ending is not available yet.",
+      unavailableCopy:
+        "Submit the final report first. Once the case is closed, this screen becomes the formal ending and epilogue for your investigation.",
+      finalTheory: "Final Theory",
+      evidenceTrail: "Evidence Trail",
+      nextSteps: "Next Steps",
+      returnToReport: "Return to report",
+      returnToDashboard: "Return to dashboard",
+      revisitEvidence: "Revisit evidence",
+      epiloguePerfect:
+        "Your reading closes the case with unusual clarity. The town keeps its silence, but the record now points cleanly to the confrontation, the fall, and the layered cover-up that followed.",
+      epilogueStrong:
+        "The case is closed, but not without residue. Your final reading captures the shape of the truth even if one part of the story remains slightly out of line with the strongest evidence.",
+      epilogueWeak:
+        "The case is technically closed, but the archive resists a neat ending. Your report settles the investigation while leaving visible tension between the chosen theory and the supporting record.",
     },
     entity: {
       subjectFile: "Subject File",
@@ -422,6 +487,18 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       recentLeads: "Pistas Recentes",
       evidenceByEscalation: "Provas por fase",
       openVault: "Abrir arquivo de provas",
+      reportStatus: "Estado do Relatório",
+      openReport: "Abrir relatório",
+      openEnding: "Abrir final",
+      archiveReview: "Revisão do Arquivo",
+      reportUnlocked: "O relatório final está desbloqueado e pronto a submeter.",
+      reportLocked: (missing) =>
+        `Ainda faltam rever ${missing} ficheiro${missing === 1 ? "" : "s"} obrigatório${missing === 1 ? "" : "s"} antes de encerrar o caso.`,
+      caseStatus: "Estado do Caso",
+      caseOpen: "Aberto",
+      caseClosed: "Encerrado",
+      caseStillOpen: "O relatório final ainda não foi submetido.",
+      reportScore: (score, total) => `Pontuação do veredicto submetido: ${score}/${total}`,
       phase: "Fase",
       coreCast: "Elenco Central",
     },
@@ -486,10 +563,14 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       scoreLabel: (score, total) => `${score}/${total} correspondências com a melhor hipótese`,
       reset: "Limpar Teoria",
       submit: "Submeter Relatório",
+      viewEnding: "Ver Final",
       caseClosed: "Caso Encerrado",
       verdictPerfect: "A teoria final coincide totalmente com a hipótese mais bem suportada.",
       verdictStrong: "A teoria final está muito próxima, mas um eixo ainda diverge da hipótese mais forte.",
       verdictWeak: "A teoria final encerra o caso, mas continua em conflito com provas importantes.",
+      endingTitle: "O arquivo fica selado. O caso passa agora a viver na tua leitura final.",
+      endingSummary: "Teoria final submetida.",
+      submittedAt: (value) => `Submetido ${value}`,
       evidenceReview: "Leitura das Provas",
       supportingEvidence: "Provas de suporte",
       conflictingEvidence: "Provas em conflito",
@@ -526,6 +607,25 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
         responsibility: "Responsabilidade: encobrimento partilhado por Pike, Tomas e Elena.",
         motive: "Motivo: ocultar o escândalo de segurança da turbina.",
       },
+    },
+    ending: {
+      tagline: "Ecrã dedicado para o fecho do caso, veredicto final e consequências da investigação.",
+      heading: "Final do Caso",
+      unavailableTitle: "O final ainda não está disponível.",
+      unavailableCopy:
+        "Submete primeiro o relatório final. Depois de o caso ser encerrado, este ecrã passa a funcionar como final formal e epílogo da investigação.",
+      finalTheory: "Teoria Final",
+      evidenceTrail: "Rasto de Provas",
+      nextSteps: "Próximos Passos",
+      returnToReport: "Voltar ao relatório",
+      returnToDashboard: "Voltar ao painel",
+      revisitEvidence: "Rever provas",
+      epiloguePerfect:
+        "A tua leitura encerra o caso com invulgar clareza. A vila continua em silêncio, mas o registo passa a apontar de forma limpa para o confronto, a queda e o encobrimento em camadas que se seguiu.",
+      epilogueStrong:
+        "O caso fica encerrado, mas não sem resíduos. A tua leitura final capta a forma da verdade, mesmo que uma parte da história continue ligeiramente desalinhada da prova mais forte.",
+      epilogueWeak:
+        "O caso fica tecnicamente encerrado, mas o arquivo resiste a um final limpo. O teu relatório resolve a investigação enquanto deixa visível a tensão entre a teoria escolhida e o registo que a sustenta.",
     },
     entity: {
       subjectFile: "Ficha do Sujeito",

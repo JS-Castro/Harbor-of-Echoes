@@ -4,34 +4,21 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { clsx } from "clsx";
 import {
-  getReportStorageKey,
-  getReportSubmissionStorageKey,
-  getReviewedEvidenceStorageKey,
-} from "@/lib/case-session";
+  loadCaseProgress,
+  resetReportState,
+  saveReportSelections,
+  submitReport,
+} from "@/app/actions/case-session";
 import type { AppLocale } from "@/lib/i18n";
 import { getDictionary } from "@/lib/i18n";
-
-type ReportAxis = "cause" | "responsibility" | "motive";
-
-type ReportSelections = Partial<Record<ReportAxis, string>>;
-
-type ReportSubmission = {
-  score: number;
-  submittedAt: string;
-  selections: Record<ReportAxis, string>;
-};
-
-type EvidenceCatalogItem = {
-  code: string;
-  slug: string;
-  title: string;
-};
-
-type AxisExplanation = {
-  summary: string;
-  supportingEvidenceCodes: string[];
-  conflictingEvidenceCodes: string[];
-};
+import {
+  answerExplanations,
+  totalReportAxes,
+  type EvidenceCatalogItem,
+  type ReportAxis,
+  type ReportSelections,
+  type ReportSubmission,
+} from "@/lib/report-logic";
 
 type ReportBuilderProps = {
   caseSlug: string;
@@ -39,104 +26,6 @@ type ReportBuilderProps = {
   evidenceCatalog: EvidenceCatalogItem[];
   requiredEvidenceCodes: string[];
 };
-
-const totalReportAxes = 3;
-
-const bestCaseAnswerIndexes: Record<ReportAxis, number> = {
-  cause: 0,
-  responsibility: 2,
-  motive: 1,
-};
-
-const answerExplanations: Record<ReportAxis, AxisExplanation[]> = {
-  cause: [
-    {
-      summary:
-        "The strongest read is a fall during the confrontation, with the cover-up happening afterwards rather than the death being pre-planned.",
-      supportingEvidenceCodes: ["EV-016", "EV-017", "EV-012"],
-      conflictingEvidenceCodes: ["EV-004"],
-    },
-    {
-      summary:
-        "A murder reading fits the hostile confrontation, but the scene evidence points more strongly to a sudden fall than a deliberate killing method.",
-      supportingEvidenceCodes: ["EV-016", "EV-012", "EV-013"],
-      conflictingEvidenceCodes: ["EV-017"],
-    },
-    {
-      summary:
-        "The case does not support suicide. Mara was actively protecting material, preparing publication, and setting up contingency plans.",
-      supportingEvidenceCodes: ["EV-018"],
-      conflictingEvidenceCodes: ["EV-005", "EV-019", "EV-016"],
-    },
-    {
-      summary:
-        "Mara anticipated interference and built a dead-drop, but the audio and forensic scene argue against a voluntary disappearance.",
-      supportingEvidenceCodes: ["EV-018", "EV-019"],
-      conflictingEvidenceCodes: ["EV-016", "EV-017"],
-    },
-  ],
-  responsibility: [
-    {
-      summary:
-        "Tomas is clearly present in the confrontation, but the altered records and institutional omissions show a wider cover-up.",
-      supportingEvidenceCodes: ["EV-003", "EV-016"],
-      conflictingEvidenceCodes: ["EV-011", "EV-013", "EV-020"],
-    },
-    {
-      summary:
-        "Blackwake has motive and incriminating records, but the evidence also ties named local actors to the night and the later suppression.",
-      supportingEvidenceCodes: ["EV-007", "EV-009", "EV-019"],
-      conflictingEvidenceCodes: ["EV-010", "EV-011", "EV-020"],
-    },
-    {
-      summary:
-        "The archive points to a shared cover-up: corporate motive, local coordination on the night, and police suppression after the fact.",
-      supportingEvidenceCodes: ["EV-011", "EV-013", "EV-014", "EV-020"],
-      conflictingEvidenceCodes: [],
-    },
-    {
-      summary:
-        "There are gaps, but the remaining record is specific enough to move past an unknown-responsibility verdict.",
-      supportingEvidenceCodes: ["EV-004"],
-      conflictingEvidenceCodes: ["EV-010", "EV-011", "EV-020"],
-    },
-  ],
-  motive: [
-    {
-      summary:
-        "Personal tension exists, but the broader case file keeps pointing back to operational secrecy and suppression of records.",
-      supportingEvidenceCodes: ["EV-003", "EV-012"],
-      conflictingEvidenceCodes: ["EV-007", "EV-009", "EV-015"],
-    },
-    {
-      summary:
-        "This is the strongest motive. Mara had material tying Blackwake's false reporting to an actionable safety scandal.",
-      supportingEvidenceCodes: ["EV-001", "EV-006", "EV-009", "EV-015"],
-      conflictingEvidenceCodes: [],
-    },
-    {
-      summary:
-        "Financial panic may be adjacent to the case, but the authored record is much more explicit about safety concealment than liquidity pressure.",
-      supportingEvidenceCodes: ["EV-008"],
-      conflictingEvidenceCodes: ["EV-006", "EV-009", "EV-020"],
-    },
-    {
-      summary:
-        "There is institutional pressure, but the evidence trail still centers on the turbine safety record rather than a political bribery plot.",
-      supportingEvidenceCodes: ["EV-020"],
-      conflictingEvidenceCodes: ["EV-001", "EV-009", "EV-015"],
-    },
-  ],
-};
-
-function parseStoredStringArray(value: string | null) {
-  if (!value) {
-    return [];
-  }
-
-  const parsed = JSON.parse(value);
-  return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
-}
 
 export function ReportBuilder({
   caseSlug,
@@ -146,67 +35,26 @@ export function ReportBuilder({
 }: ReportBuilderProps) {
   const dictionary = getDictionary(locale);
   const [selections, setSelections] = useState<ReportSelections>({});
-  const [hasHydrated, setHasHydrated] = useState(false);
   const [submission, setSubmission] = useState<ReportSubmission | null>(null);
   const [reviewedEvidenceCodes, setReviewedEvidenceCodes] = useState<string[]>([]);
 
   useEffect(() => {
-    const hydrationTimer = window.setTimeout(() => {
-      const storedValue = window.localStorage.getItem(getReportStorageKey(caseSlug));
-      const storedSubmission = window.localStorage.getItem(
-        getReportSubmissionStorageKey(caseSlug),
-      );
-      const storedReviewedEvidence = window.localStorage.getItem(
-        getReviewedEvidenceStorageKey(caseSlug),
-      );
+    let cancelled = false;
 
-      if (storedValue) {
-        try {
-          setSelections(JSON.parse(storedValue) as ReportSelections);
-        } catch {
-          window.localStorage.removeItem(getReportStorageKey(caseSlug));
-        }
+    void loadCaseProgress(caseSlug).then((progress) => {
+      if (cancelled) {
+        return;
       }
 
-      if (storedSubmission) {
-        try {
-          setSubmission(JSON.parse(storedSubmission) as ReportSubmission);
-        } catch {
-          window.localStorage.removeItem(getReportSubmissionStorageKey(caseSlug));
-        }
-      }
-
-      if (storedReviewedEvidence) {
-        try {
-          setReviewedEvidenceCodes(parseStoredStringArray(storedReviewedEvidence));
-        } catch {
-          window.localStorage.removeItem(getReviewedEvidenceStorageKey(caseSlug));
-        }
-      }
-
-      setHasHydrated(true);
-    }, 0);
+      setSelections(progress.reportSelections);
+      setSubmission(progress.reportSubmission);
+      setReviewedEvidenceCodes(progress.reviewedEvidenceCodes);
+    });
 
     return () => {
-      window.clearTimeout(hydrationTimer);
+      cancelled = true;
     };
   }, [caseSlug]);
-
-  useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
-
-    window.localStorage.setItem(getReportStorageKey(caseSlug), JSON.stringify(selections));
-    if (submission) {
-      window.localStorage.setItem(
-        getReportSubmissionStorageKey(caseSlug),
-        JSON.stringify(submission),
-      );
-    } else {
-      window.localStorage.removeItem(getReportSubmissionStorageKey(caseSlug));
-    }
-  }, [caseSlug, hasHydrated, selections, submission]);
 
   const reviewedEvidenceSet = useMemo(
     () => new Set(reviewedEvidenceCodes),
@@ -260,6 +108,17 @@ export function ReportBuilder({
         : dictionary.report.verdictWeak;
   }, [dictionary.report, submission]);
 
+  const submittedAtLabel = useMemo(() => {
+    if (!submission) {
+      return null;
+    }
+
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(submission.submittedAt));
+  }, [locale, submission]);
+
   const submissionAnalysis = useMemo(() => {
     if (!submission) {
       return [];
@@ -290,34 +149,32 @@ export function ReportBuilder({
   }, [dictionary.report, evidenceByCode, submission]);
 
   function handleSelect(axis: ReportAxis, answer: string) {
-    setSelections((current) => ({
-      ...current,
-      [axis]: current[axis] === answer ? undefined : answer,
-    }));
+    const nextSelections = {
+      ...selections,
+      [axis]: selections[axis] === answer ? undefined : answer,
+    };
+
+    setSelections(nextSelections);
     setSubmission(null);
+    void saveReportSelections(caseSlug, nextSelections);
   }
 
   function handleReset() {
     setSelections({});
     setSubmission(null);
+    void resetReportState(caseSlug);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!isReadyToSubmit) {
       return;
     }
 
-    const finalSelections = selections as Record<ReportAxis, string>;
-    const score = (Object.keys(bestCaseAnswerIndexes) as ReportAxis[]).filter(
-      (axis) =>
-        finalSelections[axis] === dictionary.report.answers[axis][bestCaseAnswerIndexes[axis]],
-    ).length;
-
-    setSubmission({
-      score,
-      submittedAt: new Date().toISOString(),
-      selections: finalSelections,
-    });
+    try {
+      setSubmission(await submitReport(caseSlug, locale, selections));
+    } catch {
+      return;
+    }
   }
 
   return (
@@ -417,7 +274,36 @@ export function ReportBuilder({
         </div>
 
         {submission ? (
-          <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/10 p-5">
+          <div className="mt-6 space-y-5">
+            <div className="overflow-hidden rounded-[1.75rem] border border-cyan-100/15 bg-[radial-gradient(circle_at_top,#2a5461_0%,#0e1a24_48%,#091119_100%)] p-6">
+              <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/70">
+                {dictionary.report.caseClosed}
+              </p>
+              <h3 className="mt-3 max-w-2xl text-3xl text-white sm:text-4xl">
+                {dictionary.report.endingTitle}
+              </h3>
+              <p className="mt-4 max-w-3xl text-base leading-8 text-slate-200">
+                {submittedVerdict}
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href={`/case/${caseSlug}/ending`}
+                  className="rounded-full border border-cyan-100/20 bg-cyan-100/10 px-4 py-2 text-sm text-cyan-50 transition hover:border-cyan-100/40 hover:bg-cyan-100/15"
+                >
+                  {dictionary.report.viewEnding}
+                </Link>
+                <div className="rounded-full border border-cyan-100/20 bg-cyan-100/10 px-4 py-2 text-sm text-cyan-50">
+                  {dictionary.report.scoreLabel(submission.score, totalReportAxes)}
+                </div>
+                {submittedAtLabel ? (
+                  <div className="rounded-full border border-white/10 bg-black/10 px-4 py-2 text-sm text-slate-200">
+                    {dictionary.report.submittedAt(submittedAtLabel)}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="rounded-[1.5rem] border border-white/10 bg-black/10 p-5">
             <p className="text-xs uppercase tracking-[0.24em] text-cyan-100/70">
               {dictionary.report.evidenceReview}
             </p>
@@ -469,6 +355,7 @@ export function ReportBuilder({
               ))}
             </div>
           </div>
+          </div>
         ) : null}
       </article>
 
@@ -478,7 +365,7 @@ export function ReportBuilder({
             <p className="text-xs uppercase tracking-[0.24em] text-cyan-100/70">
               {dictionary.report.caseClosed}
             </p>
-            <p className="mt-2 text-lg text-white">{submittedVerdict}</p>
+            <p className="mt-2 text-lg text-white">{dictionary.report.endingSummary}</p>
             <p className="mt-3 text-sm leading-7 text-slate-300">
               {dictionary.report.scoreLabel(submission.score, totalReportAxes)}
             </p>
