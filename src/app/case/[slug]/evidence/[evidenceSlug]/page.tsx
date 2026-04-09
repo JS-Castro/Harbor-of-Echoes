@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CaseShell } from "@/components/case-shell";
 import { EvidenceVisual } from "@/components/evidence-visual";
+import { EvidenceViewTracker } from "@/components/evidence-view-tracker";
 import {
   formatCaseDate,
   getCaseBySlug,
@@ -37,6 +38,7 @@ export default async function EvidenceDetailPage({
       tagline={evidence.summary}
       locale={locale}
     >
+      <EvidenceViewTracker caseSlug={slug} evidenceCode={evidence.code} />
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
         <article className="rounded-[2rem] border border-white/10 bg-slate-950/35 p-6">
           <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/70">

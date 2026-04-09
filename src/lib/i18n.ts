@@ -107,11 +107,26 @@ type StaticDictionary = {
     heading: string;
     instructions: string;
     currentTheory: string;
+    finalReportUnlock: string;
+    unlockReady: string;
+    unlockBlocked: (missing: number) => string;
+    archiveProgress: (reviewed: number, total: number) => string;
     pendingAnswer: string;
     axisPending: string;
     axisLocked: string;
     completion: (completed: number, total: number) => string;
+    scoreLabel: (score: number, total: number) => string;
     reset: string;
+    submit: string;
+    caseClosed: string;
+    verdictPerfect: string;
+    verdictStrong: string;
+    verdictWeak: string;
+    evidenceReview: string;
+    supportingEvidence: string;
+    conflictingEvidence: string;
+    stillMissing: string;
+    moreEvidence: (count: number) => string;
     bestCaseAnswer: string;
     axes: {
       cause: string;
@@ -260,11 +275,27 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       instructions:
         "Choose one answer for each axis to capture your current theory. Selections are stored locally for this case.",
       currentTheory: "Current Theory",
+      finalReportUnlock: "Final Report Unlock",
+      unlockReady: "The full case archive has been reviewed. The final report can now be submitted.",
+      unlockBlocked: (missing) =>
+        `Review the remaining evidence before closing the case. ${missing} file${missing === 1 ? "" : "s"} still missing.`,
+      archiveProgress: (reviewed, total) => `${reviewed}/${total} required files reviewed`,
       pendingAnswer: "No conclusion selected yet.",
       axisPending: "Open",
       axisLocked: "Selected",
       completion: (completed, total) => `${completed}/${total} axes filled`,
+      scoreLabel: (score, total) => `${score}/${total} best-case matches`,
       reset: "Reset Theory",
+      submit: "Submit Report",
+      caseClosed: "Case Closed",
+      verdictPerfect: "The final theory fully matches the strongest supported case.",
+      verdictStrong: "The final theory is close, but one axis still diverges from the strongest case.",
+      verdictWeak: "The final theory closes the case, but it still conflicts with key evidence.",
+      evidenceReview: "Evidence Review",
+      supportingEvidence: "Supporting evidence",
+      conflictingEvidence: "Conflicting evidence",
+      stillMissing: "Still Missing",
+      moreEvidence: (count) => `+${count} more`,
       bestCaseAnswer: "Best-Case Answer",
       axes: {
         cause: "Cause",
@@ -443,11 +474,27 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       instructions:
         "Escolhe uma resposta para cada eixo para registar a tua teoria atual. As escolhas ficam guardadas localmente para este caso.",
       currentTheory: "Teoria Atual",
+      finalReportUnlock: "Desbloqueio do Relatório Final",
+      unlockReady: "O arquivo completo do caso já foi revisto. O relatório final pode agora ser submetido.",
+      unlockBlocked: (missing) =>
+        `Revê as provas que faltam antes de encerrar o caso. Ainda faltam ${missing} ficheiro${missing === 1 ? "" : "s"}.`,
+      archiveProgress: (reviewed, total) => `${reviewed}/${total} ficheiros obrigatórios revistos`,
       pendingAnswer: "Ainda não existe uma conclusão selecionada.",
       axisPending: "Por fechar",
       axisLocked: "Escolhido",
       completion: (completed, total) => `${completed}/${total} eixos preenchidos`,
+      scoreLabel: (score, total) => `${score}/${total} correspondências com a melhor hipótese`,
       reset: "Limpar Teoria",
+      submit: "Submeter Relatório",
+      caseClosed: "Caso Encerrado",
+      verdictPerfect: "A teoria final coincide totalmente com a hipótese mais bem suportada.",
+      verdictStrong: "A teoria final está muito próxima, mas um eixo ainda diverge da hipótese mais forte.",
+      verdictWeak: "A teoria final encerra o caso, mas continua em conflito com provas importantes.",
+      evidenceReview: "Leitura das Provas",
+      supportingEvidence: "Provas de suporte",
+      conflictingEvidence: "Provas em conflito",
+      stillMissing: "Ainda em Falta",
+      moreEvidence: (count) => `+${count} mais`,
       bestCaseAnswer: "Melhor Resposta Possível",
       axes: {
         cause: "Causa",
