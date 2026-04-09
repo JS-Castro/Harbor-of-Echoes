@@ -23,6 +23,8 @@ Implemented:
 - evidence detail and entity dossier pages upgraded with placeholder visuals
 - final report page now supports interactive theory selection with local per-case persistence and a live theory summary
 - report page currently supports axis selection, local persistence, live summary updates, and theory reset per case
+- hydration mismatch on the report page was traced to localStorage-backed client state and has now been removed by deferring persisted state loading until after hydration
+- local browser-debugging workflow is usable against the project, but the reliable path for interactive validation is `build` + `start`; scripted Playwright interaction was flaky under `next dev` and worked correctly under `next start`
 - investigation board now supports manual note nodes with local persistence
 - board UX now includes manual note removal and avoids duplicating the same source-target connection
 - board rendering is currently using a custom interactive overlay above a hidden React Flow layer because the authored React Flow canvas became visually unreliable in-browser
@@ -100,6 +102,7 @@ Known environment constraint:
 - main remaining board risk is architectural: the app still relies on a custom overlay above hidden React Flow instead of a single renderer path
 - report flow is now more useful, but still does not score or validate the player's theory against evidence
 - report flow still does not score the theory, validate it against evidence, or provide a final submission outcome
+- current debugging/tooling investigation is narrowed: Playwright automation matches real browser behavior against `next start`, so remaining work is to codify that workflow rather than debug the report feature itself
 - keep `docs/progress.md` updated during active work so future AI sessions can resume from the latest real state
 
 ## Next Steps
@@ -111,6 +114,7 @@ Known environment constraint:
 - confirm current board interactions remain stable in-browser: bidirectional connector drag, note dragging, visible note removal, link selection with `Delete`, zoom buttons, wheel zoom, and drag-to-pan
 - decide the next report iteration: scoring, evidence-backed explanation, or saved submission flow
 - decide whether the report should become a scored verdict screen, an evidence-backed explanation view, or a final case submission step
+- keep using `next start` for reliable automated UI validation on interactive routes, especially when `next dev` shows HMR or hydration-related automation noise
 - update `docs/progress.md` as work lands so the next AI can resume without re-discovery
 - decide the next board iteration after notes and links are stable
 

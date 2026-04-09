@@ -188,7 +188,7 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
         "Evidence vault with layered document views",
         "Interactive case board for links and notes",
         "Chronological reconstruction with contradictions",
-        "Final report scoring across cause, motive, and responsibility",
+        "Final report builder across cause, motive, and responsibility",
       ],
       caseStats: [
         { label: "Evidence Items", value: "20" },
@@ -255,7 +255,7 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       resetBoard: "Reset Board",
     },
     report: {
-      tagline: "Structured final report aligned with the authored scoring axes.",
+      tagline: "Structured final report builder aligned with the authored theory axes.",
       heading: "Final Report",
       instructions:
         "Choose one answer for each axis to capture your current theory. Selections are stored locally for this case.",
@@ -371,7 +371,7 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
         "Arquivo de provas com leitura em camadas",
         "Quadro de investigação interativo para ligações e notas",
         "Reconstrução cronológica com contradições",
-        "Relatório final com avaliação de causa, motivo e responsabilidade",
+        "Construtor de relatório final por causa, motivo e responsabilidade",
       ],
       caseStats: [
         { label: "Itens de Prova", value: "20" },
@@ -438,7 +438,7 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
       resetBoard: "Repor Quadro",
     },
     report: {
-      tagline: "Relatório final estruturado e alinhado com os eixos de avaliação do caso.",
+      tagline: "Construtor de relatório final estruturado e alinhado com os eixos da teoria do caso.",
       heading: "Relatório Final",
       instructions:
         "Escolhe uma resposta para cada eixo para registar a tua teoria atual. As escolhas ficam guardadas localmente para este caso.",

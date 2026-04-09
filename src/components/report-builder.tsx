@@ -22,28 +22,33 @@ function getReportStorageKey(caseSlug: string) {
 
 export function ReportBuilder({ caseSlug, locale }: ReportBuilderProps) {
   const dictionary = getDictionary(locale);
-  const [selections, setSelections] = useState<ReportSelections>(() => {
-    if (typeof window === "undefined") {
-      return {};
-    }
+  const [selections, setSelections] = useState<ReportSelections>({});
+  const [hasHydrated, setHasHydrated] = useState(false);
 
+  useEffect(() => {
     const storedValue = window.localStorage.getItem(getReportStorageKey(caseSlug));
 
     if (!storedValue) {
-      return {};
+      setHasHydrated(true);
+      return;
     }
 
     try {
-      return JSON.parse(storedValue) as ReportSelections;
+      setSelections(JSON.parse(storedValue) as ReportSelections);
     } catch {
       window.localStorage.removeItem(getReportStorageKey(caseSlug));
-      return {};
+    } finally {
+      setHasHydrated(true);
     }
-  });
+  }, [caseSlug]);
 
   useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
     window.localStorage.setItem(getReportStorageKey(caseSlug), JSON.stringify(selections));
-  }, [caseSlug, selections]);
+  }, [caseSlug, hasHydrated, selections]);
 
   const completedAxes = (Object.keys(selections) as ReportAxis[]).filter(
     (axis) => selections[axis],
