@@ -2,9 +2,17 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
 
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 afterEach(() => {
   cleanup();
 });
+
+vi.stubGlobal("ResizeObserver", ResizeObserverMock);
 
 vi.mock("next/image", () => ({
   default: (

@@ -24,7 +24,7 @@ export type BoardSeedNode = {
   data: {
     label: string;
     meta: string;
-    tone: "entity" | "evidence";
+    tone: "entity" | "evidence" | "note";
   };
 };
 

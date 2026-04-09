@@ -81,6 +81,25 @@ type StaticDictionary = {
     description: string;
     sessionState: string;
     sessionHelp: string;
+    addNote: string;
+    addLinkLabel: string;
+    addLinkPlaceholder: string;
+    linkInstruction: string;
+    noteTextLabel: string;
+    noteMeta: string;
+    newNoteTitle: string;
+    notePlaceholder: string;
+    noteCounter: (count: number) => string;
+    removeNote: string;
+    startLink: string;
+    linkingFrom: string;
+    linkReady: string;
+    duplicateLinkHelp: string;
+    removeLink: string;
+    zoomIn: string;
+    zoomOut: string;
+    centerView: string;
+    resetView: string;
     resetBoard: string;
   };
   report: {
@@ -207,6 +226,25 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
         "This first pass maps the authored case graph into a navigable board. The next layer is persisted notes, manual links, and drag state per investigation session.",
       sessionState: "Session State",
       sessionHelp: "Drag nodes to reorganize the case board. Layout is stored locally.",
+      addNote: "Add Note",
+      addLinkLabel: "Link Label",
+      addLinkPlaceholder: "manual link",
+      linkInstruction: "Drag from a node's right connector into another node's left connector.",
+      noteTextLabel: "Note Text",
+      noteMeta: "Manual Note",
+      newNoteTitle: "New note",
+      notePlaceholder: "Capture a lead, contradiction, or next step...",
+      noteCounter: (count) => `${count} manual notes`,
+      removeNote: "Remove Note",
+      startLink: "Link",
+      linkingFrom: "Linking from",
+      linkReady: "Choose a target card to complete the link.",
+      duplicateLinkHelp: "Connecting the same two nodes updates the existing manual link.",
+      removeLink: "Remove link",
+      zoomIn: "Zoom in",
+      zoomOut: "Zoom out",
+      centerView: "Center view",
+      resetView: "Reset View",
       resetBoard: "Reset Board",
     },
     report: {
@@ -363,6 +401,25 @@ const dictionaries: Record<AppLocale, StaticDictionary> = {
         "Esta primeira versão transforma o grafo narrativo do caso num quadro navegável. O passo seguinte é acrescentar notas persistidas, ligações manuais e estado de arrasto por sessão de investigação.",
       sessionState: "Estado da Sessão",
       sessionHelp: "Arrasta os nós para reorganizar o quadro. O layout fica guardado localmente.",
+      addNote: "Adicionar Nota",
+      addLinkLabel: "Etiqueta da Ligação",
+      addLinkPlaceholder: "ligação manual",
+      linkInstruction: "Arrasta do conector direito de um nó para o conector esquerdo de outro nó.",
+      noteTextLabel: "Texto da Nota",
+      noteMeta: "Nota Manual",
+      newNoteTitle: "Nova nota",
+      notePlaceholder: "Regista uma pista, contradição ou próximo passo...",
+      noteCounter: (count) => `${count} notas manuais`,
+      removeNote: "Remover Nota",
+      startLink: "Ligar",
+      linkingFrom: "A ligar de",
+      linkReady: "Escolhe um cartão de destino para concluir a ligação.",
+      duplicateLinkHelp: "Ligar os mesmos dois nós atualiza a ligação manual existente.",
+      removeLink: "Remover ligação",
+      zoomIn: "Aproximar",
+      zoomOut: "Afastar",
+      centerView: "Centrar vista",
+      resetView: "Repor Vista",
       resetBoard: "Repor Quadro",
     },
     report: {

@@ -43,4 +43,98 @@ describe("board store", () => {
 
     expect(useBoardStore.getState().sessions["vale-disappearance"]).toEqual(seed);
   });
+
+  it("updates manual edges without losing nodes", () => {
+    const seed = getBoardSeed("vale-disappearance", "en");
+    const nextEdges = [
+      ...seed.edges,
+      {
+        id: "manual-edge-1",
+        source: seed.nodes[0]!.id,
+        target: seed.nodes[1]!.id,
+        label: "contradicts",
+      },
+    ];
+
+    useBoardStore.getState().hydrateCase("vale-disappearance", seed);
+    useBoardStore.getState().setEdges("vale-disappearance", nextEdges);
+
+    expect(useBoardStore.getState().sessions["vale-disappearance"]?.edges).toEqual(nextEdges);
+    expect(useBoardStore.getState().sessions["vale-disappearance"]?.nodes).toEqual(seed.nodes);
+  });
+
+  it("updates nodes without losing stored edges", () => {
+    const seed = getBoardSeed("vale-disappearance", "en");
+    const noteNode = {
+      id: "note-1",
+      type: "note",
+      position: { x: 400, y: 480 },
+      data: {
+        label: "Check Pike timeline",
+        meta: "Manual Note",
+        tone: "note" as const,
+      },
+    };
+
+    useBoardStore.getState().hydrateCase("vale-disappearance", seed);
+    useBoardStore.getState().setEdges("vale-disappearance", [
+      ...seed.edges,
+      {
+        id: "manual-edge-2",
+        source: seed.nodes[0]!.id,
+        target: noteNode.id,
+        label: "follow up",
+      },
+    ]);
+    useBoardStore.getState().setNodes("vale-disappearance", [...seed.nodes, noteNode]);
+
+    expect(useBoardStore.getState().sessions["vale-disappearance"]?.nodes).toContainEqual(
+      noteNode,
+    );
+    expect(useBoardStore.getState().sessions["vale-disappearance"]?.edges).toContainEqual({
+      id: "manual-edge-2",
+      source: seed.nodes[0]!.id,
+      target: noteNode.id,
+      label: "follow up",
+    });
+  });
+
+  it("removes a note node and connected edges together", () => {
+    const seed = getBoardSeed("vale-disappearance", "en");
+    const noteNode = {
+      id: "note-2",
+      type: "note",
+      position: { x: 420, y: 520 },
+      data: {
+        label: "Cross-check ferry locker receipt",
+        meta: "Manual Note",
+        tone: "note" as const,
+      },
+    };
+
+    useBoardStore.getState().hydrateCase("vale-disappearance", seed);
+    useBoardStore.getState().setNodes("vale-disappearance", [...seed.nodes, noteNode]);
+    useBoardStore.getState().setEdges("vale-disappearance", [
+      ...seed.edges,
+      {
+        id: "manual-edge-3",
+        source: seed.nodes[0]!.id,
+        target: noteNode.id,
+        label: "cross-check",
+      },
+    ]);
+
+    useBoardStore.getState().removeNode("vale-disappearance", noteNode.id);
+
+    expect(
+      useBoardStore.getState().sessions["vale-disappearance"]?.nodes.find(
+        (node) => node.id === noteNode.id,
+      ),
+    ).toBeUndefined();
+    expect(
+      useBoardStore.getState().sessions["vale-disappearance"]?.edges.find(
+        (edge) => edge.id === "manual-edge-3",
+      ),
+    ).toBeUndefined();
+  });
 });

@@ -21,6 +21,17 @@ Implemented:
 - locale switcher persisted by cookie
 - pt-PT localized case content overrides for case, entities, evidence, events, and locations
 - evidence detail and entity dossier pages upgraded with placeholder visuals
+- investigation board now supports manual note nodes and custom link labels with local persistence
+- board UX now includes manual note removal and updates existing links instead of duplicating the same source-target connection
+- board rendering is currently using a custom interactive overlay above a hidden React Flow layer because the authored React Flow canvas became visually unreliable in-browser
+- board overlay currently supports visible draggable cards, visible manual notes, custom edge labels, connector drag from right-side `out` to left-side `in`, and explicit manual link removal
+- connector geometry in the overlay now uses measured card dimensions so edge anchors stay centered on the visible left/right points
+- board overlay now has working replacement viewport controls for the visible layer, including overlay zoom buttons, background drag-to-pan, and reset-to-center behavior
+- visible note cards now expose note removal directly in the overlay instead of relying on hidden underlying markup
+- initial automated test coverage expanded to frontend components and board state operations
+- board overlay has a focused component test covering manual note creation and visible removal
+- board canvas refactored to extract overlay helpers and overlay rendering parts so the main component is easier to reason about while keeping the current interaction model
+- GitHub Actions pipeline added for `lint`, `test`, and `build`
 
 ## Key Documents
 
@@ -66,6 +77,7 @@ Source tracking lives in `docs/asset-attribution.md`.
 Passing:
 
 - `npm run lint`
+- `npm run test:run`
 - `npm run build`
 
 Known environment constraint:
@@ -81,34 +93,40 @@ Known environment constraint:
 
 ## Current Uncommitted Work
 
-None. Working tree is currently clean.
+- stabilizing the board overlay interaction layer and removing regressions introduced during the React Flow visibility debugging
+- verifying that connector drag, card dragging, replacement controls, and background panning all behave correctly in the browser
+- reassess the board implementation itself so it becomes simpler to maintain, easier to understand, and better in UX/UI instead of continuing to stack debugging workarounds
+- keep `docs/progress.md` updated during active work so future AI sessions can resume from the latest real state
 
 ## Next Steps
 
 ### Immediate
 
-- review and refine `pt-PT` wording so it reads naturally and consistently across the game
-- scan the UI for any remaining English or mixed-register text in Portuguese mode
-- decide the minimum test surface for the current phase
+- review the board implementation with the goal of making it simpler and easier to work on, ideally by restoring a clean React Flow-based path instead of a growing overlay workaround
+- prioritize a board UX/UI that feels straightforward to use: visible nodes, obvious linking, working controls, and low-friction interactions
+- confirm connector drag from `out` to `in`, note dragging, visible note removal, zoom buttons, and drag-to-pan in the browser
+- update `docs/progress.md` as work lands so the next AI can resume without re-discovery
+- decide the next board iteration after notes and links are stable
 
 ### Testing and CI
 
-- install a test runner
-- add a small initial suite for i18n, case data composition, and critical route-level logic
-- add a GitHub Actions workflow to run `lint`, `test`, and `build`
+- add focused tests for the current board overlay interaction logic once the browser behavior is stable
+- keep CI green for `lint`, `test`, and `build`
 
 ### After That
 
 - replace temporary stock placeholders with project-owned art when available
 - connect authored JSON content to Prisma-backed reads instead of direct file access
-- add manual note creation and custom links on the board
+- revisit a cleaner long-term board renderer once the current interaction model is trusted
 
 ## Resume Prompt
 
 If a future session needs to resume quickly:
 
-`Continue Harbor of Echoes from docs/progress.md, audit pt-PT consistency across the UI and case content, then add tests plus a GitHub Actions pipeline for lint, test, and build.`
+`Continue Harbor of Echoes from docs/progress.md, then stabilize the board overlay interaction model in-browser, especially connector drag, controls visibility, and note/card movement.`
 
 ## Agent Collaboration Preference
 
 - Future AI agents working on this project may freely spawn additional sub-agents whenever that helps divide independent workstreams, speed up analysis, or parallelize implementation and verification.
+- Future AI agents should update `docs/progress.md` during the session whenever meaningful progress lands, so the file stays usable as the primary handoff record.
+- Future AI agents should prefer the simplest board architecture that delivers a clean UX/UI and avoid piling on temporary interaction layers if restoring a direct, maintainable implementation is feasible.
