@@ -21,11 +21,11 @@ Implemented:
 - locale switcher persisted by cookie
 - pt-PT localized case content overrides for case, entities, evidence, events, and locations
 - evidence detail and entity dossier pages upgraded with placeholder visuals
-- investigation board now supports manual note nodes and custom link labels with local persistence
-- board UX now includes manual note removal and updates existing links instead of duplicating the same source-target connection
+- investigation board now supports manual note nodes with local persistence
+- board UX now includes manual note removal and avoids duplicating the same source-target connection
 - board rendering is currently using a custom interactive overlay above a hidden React Flow layer because the authored React Flow canvas became visually unreliable in-browser
-- board overlay currently supports visible draggable cards, visible manual notes, custom edge labels, connector drag from right-side `out` to left-side `in`, and explicit manual link removal
-- connector geometry in the overlay now uses measured card dimensions so edge anchors stay centered on the visible left/right points
+- board overlay currently supports visible draggable cards, visible manual notes, connector drag from either side, keyboard deletion of selected links, and direct edge selection
+- connector geometry in the overlay now uses measured connector positions so edge anchors stay aligned with the visible left/right points
 - board overlay now has working replacement viewport controls for the visible layer, including overlay zoom buttons, background drag-to-pan, and reset-to-center behavior
 - visible note cards now expose note removal directly in the overlay instead of relying on hidden underlying markup
 - initial automated test coverage expanded to frontend components and board state operations
@@ -93,9 +93,8 @@ Known environment constraint:
 
 ## Current Uncommitted Work
 
-- stabilizing the board overlay interaction layer and removing regressions introduced during the React Flow visibility debugging
-- verifying that connector drag, card dragging, replacement controls, and background panning all behave correctly in the browser
-- reassess the board implementation itself so it becomes simpler to maintain, easier to understand, and better in UX/UI instead of continuing to stack debugging workarounds
+- no active uncommitted work at the moment; latest board stabilization and refactor pass has been committed and pushed
+- main remaining board risk is architectural: the app still relies on a custom overlay above hidden React Flow instead of a single renderer path
 - keep `docs/progress.md` updated during active work so future AI sessions can resume from the latest real state
 
 ## Next Steps
@@ -104,7 +103,7 @@ Known environment constraint:
 
 - review the board implementation with the goal of making it simpler and easier to work on, ideally by restoring a clean React Flow-based path instead of a growing overlay workaround
 - prioritize a board UX/UI that feels straightforward to use: visible nodes, obvious linking, working controls, and low-friction interactions
-- confirm connector drag from `out` to `in`, note dragging, visible note removal, zoom buttons, and drag-to-pan in the browser
+- confirm current board interactions remain stable in-browser: bidirectional connector drag, note dragging, visible note removal, link selection with `Delete`, zoom buttons, wheel zoom, and drag-to-pan
 - update `docs/progress.md` as work lands so the next AI can resume without re-discovery
 - decide the next board iteration after notes and links are stable
 
@@ -123,7 +122,7 @@ Known environment constraint:
 
 If a future session needs to resume quickly:
 
-`Continue Harbor of Echoes from docs/progress.md, then stabilize the board overlay interaction model in-browser, especially connector drag, controls visibility, and note/card movement.`
+`Continue Harbor of Echoes from docs/progress.md, then verify the current board overlay behavior in-browser and decide whether to keep refining the overlay or replace it with a cleaner single-renderer board implementation.`
 
 ## Agent Collaboration Preference
 
